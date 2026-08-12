@@ -1,0 +1,26 @@
+import { Route, Routes } from 'react-router-dom'
+import MainLayout from './layouts/MainLayout'
+import HomePage from './pages/main/HomePage'
+import MapPage from './pages/main/MapPage'
+import PassportPage from './pages/main/PassportPage'
+import SavedPage from './pages/main/SavedPage'
+import LandingPage from './pages/onboarding/LandingPage'
+import ResultPage from './pages/onboarding/ResultPage'
+import TestPage from './pages/onboarding/TestPage'
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/test" element={<TestPage />} />
+      <Route path="/result" element={<ResultPage />} />
+
+      <Route element={<MainLayout />}>
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/map" element={<MapPage />} />
+        <Route path="/saved" element={<SavedPage />} />
+        <Route path="/passport" element={<PassportPage />} />
+      </Route>
+    </Routes>
+  )
+}
