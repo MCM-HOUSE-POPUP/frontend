@@ -1,6 +1,23 @@
 @import "tailwindcss";
 @import "@fontsource/dm-serif-display/400.css";
+@import "pretendard/dist/web/static/pretendard.css";
 
 @theme {
+  --font-pretendard: "Pretendard", -apple-system, sans-serif;
   --font-dm-serif: "DM Serif Display", serif;
+  --color-mcm-black: #111111;
+  --color-mcm-white: #ffffff;
+  --color-mcm-accent: #000000;
+  --color-mcm-card-bg: #f7f7f5;
+  --color-mcm-border: #d8d8d5;
+  --color-mcm-inactive: #eeeeec;
+  --color-mcm-secondary: #8a8a86;
+  --color-mcm-desc: #444442;
+}
+
+body {
+  font-family:
+    "Pretendard",
+    -apple-system,
+    sans-serif;
 }
