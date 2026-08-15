@@ -18,9 +18,7 @@ export default function MissionDetailPage() {
   }
 
   const handleStartMission = () => {
-    // TODO: 미션카메라 화면 만들면 여기서 이동시키기
-    // navigate(`/mission/${mission.house.toLowerCase()}/camera`);
-    console.log(`${mission.house} 미션 시작`);
+    navigate(`/mission/${mission.house.toLowerCase()}/camera`);
   };
 
   return (
