@@ -25,7 +25,7 @@ export default function MissionCameraPage() {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
-      } catch (err) {
+      } catch {
         setError("카메라 권한을 허용해주세요.");
       }
     }
@@ -52,7 +52,7 @@ export default function MissionCameraPage() {
 
     // TODO: 백엔드 사진 업로드 API 나오면 여기서 photoDataUrl을 서버로 전송
     // 지금은 mock으로 완료 화면에 그대로 넘겨줌
-    navigate("/mission/complete", { state: { house, photoDataUrl } });
+    navigate("/mission/passport-saved", { state: { house, photoDataUrl } });
   };
 
   if (!mission) {

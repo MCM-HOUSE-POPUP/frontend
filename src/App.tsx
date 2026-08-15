@@ -11,6 +11,7 @@ import { SavedProvider } from "./context/SavedContext";
 import MissionListPage from "./pages/mission/MissionListPage";
 import MissionDetailPage from "./pages/mission/MissionDetailPage";
 import MissionCameraPage from "./pages/mission/MissionCameraPage";
+import MissionPassportSavedPage from "./pages/mission/MissionPassportSavedPage";
 
 export default function App() {
   return (
@@ -22,6 +23,10 @@ export default function App() {
         <Route path="/mission" element={<MissionListPage />} />
         <Route path="/mission/:house" element={<MissionDetailPage />} />
         <Route path="/mission/:house/camera" element={<MissionCameraPage />} />
+        <Route
+          path="/mission/passport-saved"
+          element={<MissionPassportSavedPage />}
+        />
 
         <Route element={<MainLayout />}>
           <Route path="/home" element={<HomePage />} />
