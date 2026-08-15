@@ -10,6 +10,7 @@ import TestPage from "./pages/onboarding/TestPage";
 import { SavedProvider } from "./context/SavedContext";
 import MissionListPage from "./pages/mission/MissionListPage";
 import MissionDetailPage from "./pages/mission/MissionDetailPage";
+import MissionCameraPage from "./pages/mission/MissionCameraPage";
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/result" element={<ResultPage />} />
         <Route path="/mission" element={<MissionListPage />} />
         <Route path="/mission/:house" element={<MissionDetailPage />} />
+        <Route path="/mission/:house/camera" element={<MissionCameraPage />} />
 
         <Route element={<MainLayout />}>
           <Route path="/home" element={<HomePage />} />
