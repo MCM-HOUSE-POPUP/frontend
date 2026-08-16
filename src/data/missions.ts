@@ -69,7 +69,28 @@ export const missions: MissionInfo[] = [
 // PassportView.zones[].visited 값으로 교체하기
 export const dummyVisitedStatus: Record<string, boolean> = {
   LEGACY: true,
-  INSTINCT: true,
+  INSTINCT: false,
   FREEDOM: false,
   CURIOSITY: false,
 };
+
+export interface ZoneInfo {
+  house: "LEGACY" | "INSTINCT" | "FREEDOM" | "CURIOSITY";
+  tags: string;
+  floor: 1 | 2;
+}
+
+export const zoneInfoList: ZoneInfo[] = [
+  { house: "LEGACY", tags: "헤리티지 / 클래식 / 타임리스", floor: 1 },
+  { house: "INSTINCT", tags: "자기표현 / 대담함 / 개성", floor: 1 },
+  { house: "FREEDOM", tags: "자유로움 / 모빌리티 / 유연함", floor: 2 },
+  { house: "CURIOSITY", tags: "발견 / 새로움 / 실험정신", floor: 2 },
+];
+
+// TODO: 백엔드 GET /api/results/{id} 나오면 ResultView.recommendedRoute로 교체
+export const dummyRecommendedRoute: string[] = [
+  "LEGACY",
+  "INSTINCT",
+  "FREEDOM",
+  "CURIOSITY",
+];
