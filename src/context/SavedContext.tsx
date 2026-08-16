@@ -2,17 +2,17 @@ import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
 
 interface SavedContextType {
-  savedIds: number[];
-  toggleSave: (id: number) => void;
-  isSaved: (id: number) => boolean;
+  savedIds: string[];
+  toggleSave: (id: string) => void;
+  isSaved: (id: string) => boolean;
 }
 
 const SavedContext = createContext<SavedContextType | undefined>(undefined);
 
 export function SavedProvider({ children }: { children: ReactNode }) {
-  const [savedIds, setSavedIds] = useState<number[]>([]);
+  const [savedIds, setSavedIds] = useState<string[]>([]);
 
-  const toggleSave = (id: number) => {
+  const toggleSave = (id: string) => {
     setSavedIds((prev) =>
       prev.includes(id)
         ? prev.filter((savedId) => savedId !== id)
@@ -21,7 +21,7 @@ export function SavedProvider({ children }: { children: ReactNode }) {
     // TODO: 실제로는 여기서 API 호출 (찜 등록/해제) 필요
   };
 
-  const isSaved = (id: number) => savedIds.includes(id);
+  const isSaved = (id: string) => savedIds.includes(id);
 
   return (
     <SavedContext.Provider value={{ savedIds, toggleSave, isSaved }}>

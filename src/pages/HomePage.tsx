@@ -6,12 +6,13 @@ import {
   houseCategories,
   getRandomProducts,
 } from "../data/products";
+import type { HouseType } from "../types/product";
 import { useSaved } from "../context/SavedContext";
 import HeartToggle from "../components/HeartToggle";
 
 // TODO: 실제로는 Context/localStorage에서 가져오기
 const dummyResultId: string | null = null;
-const dummyHouseType: string | null = null;
+const dummyHouseType: HouseType | null = null;
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -19,9 +20,10 @@ export default function HomePage() {
 
   const [displayProducts] = useState(() => {
     const pool =
-      dummyResultId && dummyHouseType && housePool[dummyHouseType]
+      dummyResultId && dummyHouseType
         ? housePool[dummyHouseType]
         : defaultPool;
+
     return getRandomProducts(pool, 2);
   });
 
@@ -53,6 +55,7 @@ export default function HomePage() {
       <hr className="border-mcm-border mb-6" />
 
       <p className="text-xs tracking-widest text-mcm-secondary mb-3">EXPLORE</p>
+
       <div className="grid grid-cols-4 border-t border-l border-mcm-border mb-4">
         {houseCategories.map((house) => (
           <div
@@ -77,6 +80,7 @@ export default function HomePage() {
       <p className="text-xs tracking-widest text-mcm-secondary mb-3">
         DISVOXER IN THIS HOUSE
       </p>
+
       <div className="grid grid-cols-2 gap-3">
         {displayProducts.map((product) => (
           <div key={product.id} className="relative">
