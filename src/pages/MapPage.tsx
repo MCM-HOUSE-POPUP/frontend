@@ -5,7 +5,7 @@ import {
   dummyRecommendedRoute,
   dummyVisitedStatus,
   missions,
-} from "../../data/missions";
+} from "../data/missions";
 
 function Chevron({ className }: { className?: string }) {
   return (

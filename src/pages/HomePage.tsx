@@ -5,9 +5,9 @@ import {
   defaultPool,
   houseCategories,
   getRandomProducts,
-} from "../../data/products";
-import { useSaved } from "../../context/SavedContext";
-import HeartToggle from "../../components/HeartToggle";
+} from "../data/products";
+import { useSaved } from "../context/SavedContext";
+import HeartToggle from "../components/HeartToggle";
 
 // TODO: 실제로는 Context/localStorage에서 가져오기
 const dummyResultId: string | null = null;

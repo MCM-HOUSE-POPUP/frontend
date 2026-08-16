@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { allProducts, savedFilterTabs } from "../../data/products";
-import { useSaved } from "../../context/SavedContext";
-import HeartToggle from "../../components/HeartToggle";
+import { allProducts, savedFilterTabs } from "../data/products";
+import { useSaved } from "../context/SavedContext";
+import HeartToggle from "../components/HeartToggle";
 
 export default function SavedPage() {
   const { savedIds, toggleSave, isSaved } = useSaved();
