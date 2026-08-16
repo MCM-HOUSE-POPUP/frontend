@@ -1,12 +1,14 @@
 import { Route, Routes } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
-import HomePage from "./pages/main/HomePage";
-import MapPage from "./pages/main/MapPage";
-import PassportPage from "./pages/main/PassportPage";
-import SavedPage from "./pages/main/SavedPage";
-import LandingPage from "./pages/onboarding/LandingPage";
-import ResultPage from "./pages/onboarding/ResultPage";
-import TestPage from "./pages/onboarding/TestPage";
+import HomePage from "./pages/HomePage";
+import MapPage from "./pages/MapPage";
+import PassportPage from "./pages/PassportPage";
+import ProductDetailPage from "./pages/ProductDetailPage";
+import ProductInquiryPage from "./pages/ProductInquiryPage";
+import SavedPage from "./pages/SavedPage";
+import LandingPage from "./pages/LandingPage";
+import ResultPage from "./pages/ResultPage";
+import TestPage from "./pages/TestPage";
 import { SavedProvider } from "./context/SavedContext";
 import MissionListPage from "./pages/mission/MissionListPage";
 import MissionDetailPage from "./pages/mission/MissionDetailPage";
@@ -40,6 +42,10 @@ export default function App() {
           <Route path="/saved" element={<SavedPage />} />
           <Route path="/passport" element={<PassportPage />} />
         </Route>
+
+        <Route path="/products/:productId" element={<ProductDetailPage />} />
+        <Route path="/products/:productId/inquiry" element={<ProductInquiryPage />}
+/>
       </Routes>
     </SavedProvider>
   );
