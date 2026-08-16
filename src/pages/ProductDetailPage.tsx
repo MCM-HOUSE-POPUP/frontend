@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { mockProductDetails } from "../mocks/productDetail";
 import { useSaved } from "../context/SavedContext";
@@ -10,6 +11,10 @@ export default function ProductDetailPage() {
 
   const data = productId ? mockProductDetails[productId] : undefined;
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [productId]);
+
   if (!data) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-mcm-white">
@@ -19,8 +24,8 @@ export default function ProductDetailPage() {
   }
 
   return (
-    <main className="min-h-screen bg-mcm-white pb-8">
-      <header className="flex h-14 items-center px-4">
+    <main className="min-h-screen bg-mcm-white pb-8 pt-10">
+      <header className="flex h-14 items-center px-5">
         <button
           type="button"
           onClick={() => navigate(-1)}
@@ -114,14 +119,14 @@ export default function ProductDetailPage() {
         <div className="mt-5 grid grid-cols-2 gap-2">
           <Link
             to={`/products/${data.product.id}/inquiry`}
-            className="bg-mcm-secondary py-4 text-center text-sm text-mcm-white"
+            className="flex h-12 items-center justify-center bg-mcm-secondary text-sm font-medium text-mcm-white"
           >
             셀러에게 문의하기
           </Link>
 
           <button
             type="button"
-            className="bg-mcm-black py-4 text-sm text-mcm-white"
+            className="h-12 bg-mcm-black text-sm font-medium text-mcm-white"
           >
             제품 보러가기
           </button>
