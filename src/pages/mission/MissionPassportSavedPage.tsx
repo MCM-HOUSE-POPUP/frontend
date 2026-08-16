@@ -33,12 +33,7 @@ export default function MissionPassportSavedPage() {
   }
 
   const handleNext = () => {
-    if (nextMission) {
-      navigate(`/mission/${nextMission.house.toLowerCase()}`);
-    } else {
-      // 4개 다 완료한 경우
-      navigate("/mission");
-    }
+    navigate("/map");
   };
 
   return (

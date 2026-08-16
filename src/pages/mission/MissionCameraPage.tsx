@@ -38,7 +38,7 @@ export default function MissionCameraPage() {
     };
   }, []);
 
-  const handleCapture = () => {
+  const handleCapture = async () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
     if (!video || !canvas) return;
@@ -50,9 +50,32 @@ export default function MissionCameraPage() {
 
     const photoDataUrl = canvas.toDataURL("image/jpeg", 0.9);
 
-    // TODO: 백엔드 사진 업로드 API 나오면 여기서 photoDataUrl을 서버로 전송
+    // 백엔드한테 전달할 요청 형태
+    // POST /api/results/{id}/style-discovery
+    const requestBody = {
+      photo: photoDataUrl, // base64 인코딩된 이미지 (data:image/jpeg;base64,... 형태)
+      house: house?.toUpperCase(),
+      // selectedProductId: 아직 상품 선택 UI가 없어서 일단 생략, 나중에 추가
+    };
+
+    try {
+      // TODO: 백엔드 API 완성되면 아래 fetch 주석 풀고 실제 연결
+      // const response = await fetch(`/api/results/${resultId}/style-discovery`, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(requestBody),
+      // });
+      // const data = await response.json();
+
+      console.log("서버로 보낼 요청 형태:", requestBody);
+    } catch (error) {
+      console.error("사진 전송 실패:", error);
+    }
+
     // 지금은 mock으로 완료 화면에 그대로 넘겨줌
-    navigate("/mission/passport-saved", { state: { house, photoDataUrl } });
+    navigate(`/mission/${house?.toLowerCase()}/result`, {
+      state: { photoDataUrl },
+    });
   };
 
   if (!mission) {
