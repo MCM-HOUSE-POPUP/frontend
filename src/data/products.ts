@@ -121,14 +121,14 @@ export const housePool: Record<string, Product[]> = {
       id: 303,
       name: "Aren 비세토스 레더 믹스 베니티 케이스",
       price: 990000,
-      image: "/images/freedom/03_REC3.avif",
+      image: "/images/freedom/03_REC3.PNG",
       house: "FREEDOM",
     },
     {
       id: 304,
       name: "Aren 비세토스 브라스 플레이트 지갑",
       price: 490000,
-      image: "/images/freedom/03_REC4.avif",
+      image: "/images/freedom/03_REC4.PNG",
       house: "FREEDOM",
     },
     {
@@ -142,14 +142,14 @@ export const housePool: Record<string, Product[]> = {
       id: 306,
       name: "Disco 로고 자수 코튼 트윌 캡",
       price: 370000,
-      image: "/images/freedom/03_REC6.PNG",
+      image: "/images/freedom/03_REC6.avif",
       house: "FREEDOM",
     },
     {
       id: 307,
       name: "다이아몬드 모노그램 스카프",
       price: 390000,
-      image: "/images/freedom/03_REC7.PNG",
+      image: "/images/freedom/03_REC7.avif",
       house: "FREEDOM",
     },
   ],
@@ -206,10 +206,8 @@ export const housePool: Record<string, Product[]> = {
   ],
 };
 
-// 전체 상품 (Saved 페이지에서 저장된 id로 찾을 때 사용)
 export const allProducts: Product[] = Object.values(housePool).flat();
 
-// 진단 전 기본 추천 풀 (4개 House에서 골고루 섞음)
 export const defaultPool: Product[] = [
   housePool.LEGACY[0],
   housePool.INSTINCT[0],
@@ -226,7 +224,6 @@ export const houseCategories = [
   { code: "04", name: "CURIOSITY" },
 ];
 
-// Saved 페이지 필터 탭 (코드 ↔ house 매핑)
 export const savedFilterTabs = [
   { code: "ALL", house: null },
   { code: "LEG", house: "LEGACY" },

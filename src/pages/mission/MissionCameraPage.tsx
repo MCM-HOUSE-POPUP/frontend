@@ -73,7 +73,9 @@ export default function MissionCameraPage() {
     }
 
     // 지금은 mock으로 완료 화면에 그대로 넘겨줌
-    navigate("/mission/passport-saved", { state: { house, photoDataUrl } });
+    navigate(`/mission/${house?.toLowerCase()}/result`, {
+      state: { photoDataUrl },
+    });
   };
 
   if (!mission) {

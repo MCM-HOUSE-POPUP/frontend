@@ -12,6 +12,7 @@ import MissionListPage from "./pages/mission/MissionListPage";
 import MissionDetailPage from "./pages/mission/MissionDetailPage";
 import MissionCameraPage from "./pages/mission/MissionCameraPage";
 import MissionPassportSavedPage from "./pages/mission/MissionPassportSavedPage";
+import MissionResultPage from "./pages/mission/MissionResultPage";
 
 export default function App() {
   return (
@@ -26,6 +27,11 @@ export default function App() {
         <Route
           path="/mission/passport-saved"
           element={<MissionPassportSavedPage />}
+        />
+        <Route path="/mission/:house/result" element={<MissionResultPage />} />
+        <Route
+          path="/product/:id"
+          element={<div>제품 정보 페이지 준비 중</div>}
         />
 
         <Route element={<MainLayout />}>
