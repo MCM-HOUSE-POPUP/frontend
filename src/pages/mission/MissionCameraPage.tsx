@@ -8,6 +8,7 @@ export default function MissionCameraPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const mission = missions.find(
     (item) => item.house.toLowerCase() === house?.toLowerCase(),
@@ -50,32 +51,48 @@ export default function MissionCameraPage() {
 
     const photoDataUrl = canvas.toDataURL("image/jpeg", 0.9);
 
-    // 백엔드한테 전달할 요청 형태
-    // POST /api/results/{id}/style-discovery
+    // House 테스트 끝나고 localStorage에 저장해둔 resultId 사용
+    // TODO: 실제 키 이름이 "resultId"가 맞는지 꼭 확인
+    const resultId = localStorage.getItem("resultId");
+
+    if (!resultId) {
+      setError("진단 결과 정보가 없어요. House 테스트를 먼저 진행해주세요.");
+      return;
+    }
+
     const requestBody = {
       photo: photoDataUrl, // base64 인코딩된 이미지 (data:image/jpeg;base64,... 형태)
       house: house?.toUpperCase(),
-      // selectedProductId: 아직 상품 선택 UI가 없어서 일단 생략, 나중에 추가
+      // selectedProductId: 아직 상품 선택 UI가 없어서 일단 생략
     };
 
+    setIsUploading(true);
+
     try {
-      // TODO: 백엔드 API 완성되면 아래 fetch 주석 풀고 실제 연결
-      // const response = await fetch(`/api/results/${resultId}/style-discovery`, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(requestBody),
-      // });
-      // const data = await response.json();
+      const response = await fetch(
+        `http://localhost:8080/api/results/${resultId}/style-discovery`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody),
+        },
+      );
 
-      console.log("서버로 보낼 요청 형태:", requestBody);
-    } catch (error) {
-      console.error("사진 전송 실패:", error);
+      if (!response.ok) {
+        throw new Error(`서버 응답 에러: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // 실제 분석 결과(StyleDiscoveryView)를 결과 화면으로 전달
+      navigate(`/mission/${house?.toLowerCase()}/result`, {
+        state: { photoDataUrl, styleResult: data },
+      });
+    } catch (err) {
+      console.error("사진 전송 실패:", err);
+      setError("사진 분석에 실패했어요. 다시 시도해주세요.");
+      setIsUploading(false);
     }
-
-    // 지금은 mock으로 완료 화면에 그대로 넘겨줌
-    navigate(`/mission/${house?.toLowerCase()}/result`, {
-      state: { photoDataUrl },
-    });
   };
 
   if (!mission) {
@@ -144,10 +161,18 @@ export default function MissionCameraPage() {
           <div className="absolute bottom-10 left-0 right-0 flex justify-center z-10">
             <button
               onClick={handleCapture}
-              className="w-16 h-16 rounded-full bg-white border-4 border-mcm-secondary"
+              disabled={isUploading}
+              className="w-16 h-16 rounded-full bg-white border-4 border-mcm-secondary disabled:opacity-50"
               aria-label="사진 촬영"
             />
           </div>
+
+          {/* 업로드 중 오버레이 */}
+          {isUploading && (
+            <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-20">
+              <p className="text-white text-sm">분석 중이에요...</p>
+            </div>
+          )}
         </>
       )}
 
