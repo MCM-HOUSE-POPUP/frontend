@@ -31,10 +31,6 @@ export default function App() {
           element={<MissionPassportSavedPage />}
         />
         <Route path="/mission/:house/result" element={<MissionResultPage />} />
-        <Route
-          path="/product/:id"
-          element={<div>제품 정보 페이지 준비 중</div>}
-        />
 
         <Route element={<MainLayout />}>
           <Route path="/home" element={<HomePage />} />
@@ -44,8 +40,10 @@ export default function App() {
         </Route>
 
         <Route path="/products/:productId" element={<ProductDetailPage />} />
-        <Route path="/products/:productId/inquiry" element={<ProductInquiryPage />}
-/>
+        <Route
+          path="/products/:productId/inquiry"
+          element={<ProductInquiryPage />}
+        />
       </Routes>
     </SavedProvider>
   );

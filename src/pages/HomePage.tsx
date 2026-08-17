@@ -20,9 +20,7 @@ export default function HomePage() {
 
   const [displayProducts] = useState(() => {
     const pool =
-      dummyResultId && dummyHouseType
-        ? housePool[dummyHouseType]
-        : defaultPool;
+      dummyResultId && dummyHouseType ? housePool[dummyHouseType] : defaultPool;
 
     return getRandomProducts(pool, 2);
   });
@@ -83,7 +81,11 @@ export default function HomePage() {
 
       <div className="grid grid-cols-2 gap-3">
         {displayProducts.map((product) => (
-          <div key={product.id} className="relative">
+          <div
+            key={product.id}
+            className="relative cursor-pointer"
+            onClick={() => navigate(`/products/${product.id}`)}
+          >
             <HeartToggle
               isSaved={isSaved(product.id)}
               onClick={() => toggleSave(product.id)}
