@@ -8,7 +8,7 @@ import ProductInquiryPage from "./pages/ProductInquiryPage";
 import SavedPage from "./pages/SavedPage";
 import LandingPage from "./pages/LandingPage";
 import ResultPage from "./pages/ResultPage";
-import TestPage from "./pages/TestPage";
+import TestPage from "./pages/test/TestPage";
 import { SavedProvider } from "./context/SavedContext";
 import MissionListPage from "./pages/mission/MissionListPage";
 import MissionDetailPage from "./pages/mission/MissionDetailPage";
