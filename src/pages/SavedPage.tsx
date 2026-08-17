@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { allProducts, savedFilterTabs } from "../data/products";
 import { useSaved } from "../context/SavedContext";
 import HeartToggle from "../components/HeartToggle";
 
 export default function SavedPage() {
+  const navigate = useNavigate();
   const { savedIds, toggleSave, isSaved } = useSaved();
   const [activeFilter, setActiveFilter] = useState<string>("ALL");
 
@@ -52,7 +54,11 @@ export default function SavedPage() {
       ) : (
         <div className="grid grid-cols-2 gap-3">
           {filteredProducts.map((product) => (
-            <div key={product.id} className="relative">
+            <div
+              key={product.id}
+              className="relative cursor-pointer"
+              onClick={() => navigate(`/products/${product.id}`)}
+            >
               <HeartToggle
                 isSaved={isSaved(product.id)}
                 onClick={() => toggleSave(product.id)}

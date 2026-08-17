@@ -100,7 +100,7 @@ export default function MissionResultPage() {
           내가 찾은 상품
         </p>
         <div
-          onClick={() => navigate(`/product/${result.yourPick.id}`)}
+          onClick={() => navigate(`/products/${result.yourPick.id}`)}
           className="relative w-1/2 mb-5 cursor-pointer"
         >
           <HeartToggle
@@ -131,7 +131,7 @@ export default function MissionResultPage() {
           {result.completeTheLook.map((item) => (
             <div
               key={item.id}
-              onClick={() => navigate(`/product/${item.id}`)}
+              onClick={() => navigate(`/products/${item.id}`)}
               className="border border-mcm-border p-3 cursor-pointer"
             >
               <p className="text-[10px] text-mcm-secondary mb-1">AI PICK</p>
