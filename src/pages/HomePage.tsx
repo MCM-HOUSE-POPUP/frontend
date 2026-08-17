@@ -27,7 +27,7 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-mcm-white px-5 pt-6 pb-32">
-      <p className="text-xs tracking-widest text-mcm-secondary mb-3">
+      <p className="text-xs tracking-widest text-mcm-secondary font-semibold mb-3">
         MCM HOUSE
       </p>
 
@@ -37,7 +37,7 @@ export default function HomePage() {
         MCM HOUSE를 탐험해보세요
       </h1>
 
-      <p className="text-sm text-mcm-desc mb-6 leading-relaxed">
+      <p className="text-sm text-mcm-desc font-semibold mb-6 leading-relaxed">
         질문을 통해 당신의 취향을 발견하고,
         <br />
         MCM의 4가지 HOUSE를 탐험해보세요
@@ -52,7 +52,9 @@ export default function HomePage() {
 
       <hr className="border-mcm-border mb-6" />
 
-      <p className="text-xs tracking-widest text-mcm-secondary mb-3">EXPLORE</p>
+      <p className="text-xs tracking-widest text-mcm-secondary font-semibold mb-3">
+        EXPLORE
+      </p>
 
       <div className="grid grid-cols-4 border-t border-l border-mcm-border mb-4">
         {houseCategories.map((house) => (
@@ -60,7 +62,9 @@ export default function HomePage() {
             key={house.code}
             className="border-r border-b border-mcm-border py-4 px-2 text-center"
           >
-            <p className="text-mcm-secondary text-xs mb-2">{house.code}</p>
+            <p className="text-mcm-secondary font-semibold text-xs mb-2">
+              {house.code}
+            </p>
             <p className="font-semibold text-xs text-mcm-black">{house.name}</p>
           </div>
         ))}
@@ -75,7 +79,7 @@ export default function HomePage() {
 
       <hr className="border-mcm-border mb-4" />
 
-      <p className="text-xs tracking-widest text-mcm-secondary mb-3">
+      <p className="text-xs tracking-widest text-mcm-secondary font-semibold mb-3">
         DISVOXER IN THIS HOUSE
       </p>
 

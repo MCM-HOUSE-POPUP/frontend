@@ -33,7 +33,7 @@ export default function MissionResultPage() {
   return (
     <main className="min-h-screen bg-mcm-white max-w-[430px] mx-auto pb-28">
       <div className="px-5 pt-6">
-        <p className="text-xs tracking-widest text-mcm-secondary mb-3">
+        <p className="text-xs tracking-widest font-semibold text-mcm-secondary mb-3">
           DISCOVERY FOUND
         </p>
 
@@ -54,12 +54,14 @@ export default function MissionResultPage() {
           &#9432; HOUSE Test와 이번 제품 선택을 함께 분석했어요
         </p>
 
-        <p className="text-xs text-mcm-secondary mb-1">내가 끌리는 스타일</p>
+        <p className="text-xs font-semibold text-mcm-black mb-1">
+          내가 끌리는 스타일
+        </p>
         <h1 className="text-xl font-semibold text-mcm-black mb-3">
           {result.styleTitle}
         </h1>
 
-        <p className="text-sm text-mcm-desc leading-relaxed mb-4">
+        <p className="text-sm font-semibold text-mcm-desc leading-relaxed mb-4">
           {result.descriptionLines.map((line, index) => (
             <span key={index}>
               {line}
@@ -82,8 +84,10 @@ export default function MissionResultPage() {
         <hr className="border-mcm-border mb-5" />
 
         {/* 이 스타일이 주는 인상 */}
-        <p className="text-xs text-mcm-secondary mb-2">이 스타일이 주는 인상</p>
-        <p className="text-sm text-mcm-desc leading-relaxed mb-5">
+        <p className="text-xs font-semibold text-mcm-black mb-2">
+          이 스타일이 주는 인상
+        </p>
+        <p className="text-sm font-semibold text-mcm-desc leading-relaxed mb-5">
           {result.impressionLines.map((line, index) => (
             <span key={index}>
               {line}
@@ -95,7 +99,9 @@ export default function MissionResultPage() {
         <hr className="border-mcm-border mb-5" />
 
         {/* YOUR PICK */}
-        <p className="text-xs text-mcm-secondary mb-1">YOUR PICK</p>
+        <p className="text-xs font-semibold text-mcm-secondary mb-1">
+          YOUR PICK
+        </p>
         <p className="text-sm font-semibold text-mcm-black mb-3">
           내가 찾은 상품
         </p>
@@ -123,7 +129,9 @@ export default function MissionResultPage() {
         <hr className="border-mcm-border mb-5" />
 
         {/* COMPLETE THE LOOK */}
-        <p className="text-xs text-mcm-secondary mb-1">COMPLETE THE LOOK</p>
+        <p className="text-xs font-semibold text-mcm-secondary mb-1">
+          COMPLETE THE LOOK
+        </p>
         <p className="text-sm font-semibold text-mcm-black mb-3">
           이 제품과 함께 매치해보세요
         </p>

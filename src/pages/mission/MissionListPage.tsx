@@ -14,7 +14,7 @@ export default function MissionListPage() {
         <img src="/icons/back-arrow.svg" alt="뒤로가기" className="w-6 h-6" />
       </button>
 
-      <p className="text-xs tracking-widest text-mcm-secondary mb-2">
+      <p className="text-xs tracking-widest text-mcm-secondary font-semibold mb-2">
         HOUSE MISSIONS
       </p>
       <h1 className="text-2xl font-semibold mb-8 text-mcm-black">
@@ -36,7 +36,7 @@ export default function MissionListPage() {
                 <p className="text-sm font-semibold text-mcm-black mb-1">
                   {mission.code} - {mission.house}
                 </p>
-                <p className="text-xs text-mcm-secondary">
+                <p className="text-xs font-semibold text-mcm-desc">
                   {mission.listSubtitle}
                 </p>
               </div>

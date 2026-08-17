@@ -38,7 +38,7 @@ export default function MapPage() {
 
   return (
     <main className="min-h-screen bg-mcm-white px-5 pt-6 pb-10 max-w-[430px] mx-auto">
-      <p className="text-xs tracking-widest text-mcm-secondary mb-2">
+      <p className="text-xs tracking-widest text-mcm-secondary font-semibold mb-2">
         MCM HOUSE
       </p>
       <h1 className="text-2xl font-semibold mb-5 text-mcm-black">
@@ -97,7 +97,9 @@ export default function MapPage() {
                 >
                   {missionCode} - {zone.house}
                 </p>
-                <p className="text-xs text-mcm-secondary">{zone.tags}</p>
+                <p className="text-xs font-semibold text-mcm-secondary">
+                  {zone.tags}
+                </p>
               </div>
 
               {isActiveFloor && visited && (
@@ -124,7 +126,9 @@ export default function MapPage() {
 
       {/* YOUR ROUTE */}
       <div className="border border-mcm-secondary p-4 mb-4">
-        <p className="text-xs text-mcm-secondary mb-1">YOUR ROUTE</p>
+        <p className="text-xs font-semibold text-mcm-secondary mb-1">
+          YOUR ROUTE
+        </p>
         <p className="text-sm font-semibold text-mcm-black mb-4">
           나를 위한 추천 탐험 순서
         </p>
@@ -142,7 +146,9 @@ export default function MapPage() {
                       <span className="w-5 h-5 rounded-full border border-mcm-border text-mcm-black flex items-center justify-center text-[10px] font-semibold shrink-0">
                         {globalIndex + 1}
                       </span>
-                      <span className="text-xs text-mcm-black">{house}</span>
+                      <span className="text-xs font-semibold text-mcm-black">
+                        {house}
+                      </span>
                       {!isLast && <Chevron className="w-3 h-3" />}
                     </div>
                   );
@@ -158,7 +164,9 @@ export default function MapPage() {
         className="w-full border border-mcm-secondary p-4 flex items-center justify-between"
       >
         <div className="text-left">
-          <p className="text-xs text-mcm-secondary mb-1">MISSIONS</p>
+          <p className="text-xs font-semibold text-mcm-secondary mb-1">
+            MISSIONS
+          </p>
           <p className="text-sm font-semibold text-mcm-black">
             {completedCount} / 4 COMPLETE
           </p>
