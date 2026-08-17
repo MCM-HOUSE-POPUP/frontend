@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { mockProductDetails } from "../mocks/productDetail";
 import { useSaved } from "../context/SavedContext";
-import HeartToggle from "../components/HeartToggle";
+import ProductCard from "../components/ProductCard";
 
 export default function ProductDetailPage() {
   const navigate = useNavigate();
@@ -18,17 +18,19 @@ export default function ProductDetailPage() {
   if (!data) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-mcm-white">
-        <p className="text-sm text-mcm-desc">상품 정보를 찾을 수 없습니다.</p>
+        <p className="text-sm text-mcm-desc">
+          상품 정보를 찾을 수 없습니다.
+        </p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-mcm-white pb-8 pt-10">
-      <header className="flex h-14 items-center px-5">
+    <main className="min-h-screen bg-mcm-white pb-28">
+      <header className="flex h-14 items-center px-3">
         <button
           type="button"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/home")}
           className="flex h-10 w-10 items-center justify-center"
           aria-label="뒤로가기"
         >
@@ -90,47 +92,31 @@ export default function ProductDetailPage() {
 
           <div className="grid grid-cols-2 gap-5">
             {data.completeTheLook.map(({ product }) => (
-              <div key={product.id}>
-                <div className="relative mb-3">
-                  <HeartToggle
-                    isSaved={isSaved(product.id)}
-                    onClick={() => toggleSave(product.id)}
-                  />
-
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="aspect-square w-full bg-mcm-card-bg object-contain"
-                  />
-                </div>
-
-                <p className="text-[10px] font-semibold leading-snug text-mcm-black">
-                  {product.name}
-                </p>
-
-                <p className="mt-1 text-[10px] font-light text-mcm-black">
-                  ₩ {product.price.toLocaleString()}
-                </p>
-              </div>
+              <ProductCard
+                key={product.id}
+                product={product}
+                isSaved={isSaved(product.id)}
+                onSave={() => toggleSave(product.id)}
+              />
             ))}
           </div>
         </section>
+      </div>
 
-        <div className="mt-5 grid grid-cols-2 gap-2">
-          <Link
-            to={`/products/${data.product.id}/inquiry`}
-            className="flex h-12 items-center justify-center bg-mcm-secondary text-sm font-medium text-mcm-white"
-          >
-            셀러에게 문의하기
-          </Link>
+      <div className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-2 gap-2 bg-mcm-white px-5 pb-6 pt-3">
+        <Link
+          to={`/products/${data.product.id}/inquiry`}
+          className="flex h-12 items-center justify-center bg-mcm-secondary text-sm font-medium text-mcm-white"
+        >
+          셀러에게 문의하기
+        </Link>
 
-          <button
-            type="button"
-            className="h-12 bg-mcm-black text-sm font-medium text-mcm-white"
-          >
-            제품 보러가기
-          </button>
-        </div>
+        <button
+          type="button"
+          className="h-12 bg-mcm-black text-sm font-medium text-mcm-white"
+        >
+          제품 보러가기
+        </button>
       </div>
     </main>
   );
