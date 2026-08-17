@@ -1,4 +1,4 @@
-import type { Product } from "./products";
+import type { Product } from "../types/product";
 import { housePool } from "./products";
 
 export interface CompleteTheLookItem extends Product {
