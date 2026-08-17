@@ -20,7 +20,7 @@ export default function SavedPage() {
 
   return (
     <main className="min-h-screen bg-mcm-white px-5 pt-6 pb-32">
-      <p className="text-xs tracking-widest text-mcm-secondary mb-3">
+      <p className="text-xs tracking-widest font-semibold text-mcm-secondary mb-3">
         MY SAVED
       </p>
 

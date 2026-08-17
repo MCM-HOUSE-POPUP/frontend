@@ -27,14 +27,14 @@ export default function MissionDetailPage() {
         <img src="/icons/back-arrow.svg" alt="뒤로가기" className="w-6 h-6" />
       </button>
 
-      <p className="text-xs tracking-widest text-mcm-secondary mb-2">
+      <p className="text-xs tracking-widest text-mcm-black font-semibold mb-2">
         {mission.missionTitle}
       </p>
       <h1 className="text-2xl font-semibold mb-4 text-mcm-black">
         {mission.headline}
       </h1>
 
-      <p className="text-sm text-mcm-desc leading-relaxed mb-4">
+      <p className="text-sm text-mcm-desc font-semibold leading-relaxed mb-4">
         {mission.descriptionLines.map((line, index) => (
           <span key={index}>
             {line}
@@ -43,7 +43,7 @@ export default function MissionDetailPage() {
         ))}
       </p>
 
-      <p className="text-sm text-mcm-desc leading-relaxed mb-6">
+      <p className="text-sm text-mcm-desc font-semibold leading-relaxed mb-6">
         {guideLines.map((line, index) => (
           <span key={index}>
             {line}
@@ -52,7 +52,7 @@ export default function MissionDetailPage() {
         ))}
       </p>
 
-      <p className="text-xs text-mcm-secondary mb-2">예시 사진:</p>
+      <p className="text-xs text-mcm-desc mb-2">예시 사진:</p>
       <img
         src={mission.exampleImage}
         alt={`${mission.house} 미션 예시 사진`}

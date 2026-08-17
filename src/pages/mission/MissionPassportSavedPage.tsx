@@ -39,16 +39,16 @@ export default function MissionPassportSavedPage() {
   return (
     <main className="min-h-screen bg-mcm-white px-5 pt-6 pb-10 max-w-[430px] mx-auto flex flex-col">
       <div className="flex-1 flex flex-col items-center justify-center text-center">
-        <p className="text-sm font-semibold text-mcm-black mb-12">
+        <p className="text-lg font-semibold text-mcm-black mb-12">
           {currentMission.missionTitle}
         </p>
 
         <div className="w-44 h-44 rounded-full border border-mcm-border shadow-[0_0_0_6px_rgba(0,0,0,0.02)] flex flex-col items-center justify-center mb-4">
-          <span className="text-xl text-mcm-black mb-2">&#10003;</span>
-          <p className="text-base font-medium text-mcm-black">패스포트 저장</p>
+          <span className="text-4xl text-mcm-black mb-2">&#10003;</span>
+          <p className="text-lg font-medium text-mcm-black">패스포트 저장</p>
         </div>
 
-        <p className="text-xs tracking-widest text-mcm-secondary mb-2">
+        <p className="text-xs tracking-widest font-semibold text-mcm-secondary mb-2">
           PASSPORT UPDATED
         </p>
 
