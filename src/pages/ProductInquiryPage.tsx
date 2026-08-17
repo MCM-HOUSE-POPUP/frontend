@@ -25,7 +25,7 @@ export default function ProductInquiryPage() {
 
   if (isComplete) {
     return (
-      <main className="flex min-h-screen flex-col bg-mcm-white pt-10">
+      <main className="flex min-h-screen flex-col bg-mcm-white">
         <div className="flex flex-1 flex-col items-center justify-center pb-20 text-center">
           <img
             src="/icons/check.svg"
@@ -42,7 +42,7 @@ export default function ProductInquiryPage() {
           </p>
         </div>
 
-        <div className="px-5 pb-13">
+        <div className="px-5 pb-6">
           <button
             type="button"
             onClick={goToProduct}
@@ -56,8 +56,8 @@ export default function ProductInquiryPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col bg-mcm-white pt-10">
-      <header className="flex h-14 items-center px-5">
+    <main className="flex min-h-screen flex-col bg-mcm-white">
+      <header className="flex h-14 items-center px-3">
         <button
           type="button"
           onClick={goToProduct}
@@ -100,7 +100,7 @@ export default function ProductInquiryPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 px-5 pb-13">
+      <div className="grid grid-cols-2 gap-2 px-5 pb-6">
         <button
           type="button"
           onClick={goToProduct}
