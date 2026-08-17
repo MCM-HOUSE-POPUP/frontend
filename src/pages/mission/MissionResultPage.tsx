@@ -1,7 +1,7 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { getMockStyleResult } from "../../data/styleResults";
 import { useSaved } from "../../context/SavedContext";
 import HeartToggle from "../../components/HeartToggle";
+import type { StyleDiscoveryView } from "../../types/product";
 
 export default function MissionResultPage() {
   const navigate = useNavigate();
@@ -9,15 +9,26 @@ export default function MissionResultPage() {
   const { house } = useParams<{ house: string }>();
   const { isSaved, toggleSave } = useSaved();
 
-  const state = location.state as { photoDataUrl?: string } | null;
-  const photoDataUrl = state?.photoDataUrl;
+  const state = location.state as {
+    photoDataUrl?: string;
+    styleResult?: StyleDiscoveryView;
+  } | null;
 
-  const result = house ? getMockStyleResult(house) : undefined;
+  const photoDataUrl = state?.photoDataUrl;
+  const result = state?.styleResult;
 
   if (!result) {
     return (
-      <main className="min-h-screen bg-mcm-white flex items-center justify-center max-w-[430px] mx-auto">
-        <p className="text-sm text-mcm-desc">결과 정보를 찾을 수 없어요.</p>
+      <main className="min-h-screen bg-mcm-white flex flex-col items-center justify-center max-w-[430px] mx-auto px-5 text-center">
+        <p className="text-sm text-mcm-desc mb-4">
+          결과 정보를 찾을 수 없어요. 사진을 다시 찍어주세요.
+        </p>
+        <button
+          onClick={() => navigate(`/mission/${house?.toLowerCase()}/camera`)}
+          className="bg-mcm-black text-mcm-white px-6 py-3 text-sm font-semibold"
+        >
+          다시 찍기
+        </button>
       </main>
     );
   }
@@ -46,6 +57,12 @@ export default function MissionResultPage() {
           />
         )}
 
+        {result.fallback && (
+          <p className="text-[10px] text-mcm-secondary mb-3">
+            &#9432; 분석이 원활하지 않아 기본 추천으로 대체되었어요
+          </p>
+        )}
+
         {/* YOUR STYLE DISCOVERY */}
         <p className="text-xs font-semibold text-mcm-black mb-1">
           YOUR STYLE DISCOVERY
@@ -61,13 +78,8 @@ export default function MissionResultPage() {
           {result.styleTitle}
         </h1>
 
-        <p className="text-sm font-semibold text-mcm-desc leading-relaxed mb-4">
-          {result.descriptionLines.map((line, index) => (
-            <span key={index}>
-              {line}
-              {index < result.descriptionLines.length - 1 && <br />}
-            </span>
-          ))}
+        <p className="text-sm font-semibold text-mcm-desc leading-relaxed mb-4 whitespace-pre-line">
+          {result.styleDescription}
         </p>
 
         <div className="flex flex-wrap gap-2 mb-5">
@@ -87,44 +99,45 @@ export default function MissionResultPage() {
         <p className="text-xs font-semibold text-mcm-black mb-2">
           이 스타일이 주는 인상
         </p>
-        <p className="text-sm font-semibold text-mcm-desc leading-relaxed mb-5">
-          {result.impressionLines.map((line, index) => (
-            <span key={index}>
-              {line}
-              {index < result.impressionLines.length - 1 && <br />}
-            </span>
-          ))}
+        <p className="text-sm font-semibold text-mcm-desc leading-relaxed mb-5 whitespace-pre-line">
+          {result.impression}
         </p>
 
         <hr className="border-mcm-border mb-5" />
 
         {/* YOUR PICK */}
-        <p className="text-xs font-semibold text-mcm-secondary mb-1">
-          YOUR PICK
-        </p>
-        <p className="text-sm font-semibold text-mcm-black mb-3">
-          내가 찾은 상품
-        </p>
-        <div
-          onClick={() => navigate(`/products/${result.yourPick.id}`)}
-          className="relative w-1/2 mb-5 cursor-pointer"
-        >
-          <HeartToggle
-            isSaved={isSaved(result.yourPick.id)}
-            onClick={() => toggleSave(result.yourPick.id)}
-          />
-          <img
-            src={result.yourPick.image}
-            alt={result.yourPick.name}
-            className="w-full aspect-square object-cover mb-2"
-          />
-          <p className="text-xs leading-snug mb-1 text-mcm-black">
-            {result.yourPick.name}
-          </p>
-          <p className="text-xs font-semibold text-mcm-black">
-            ₩ {result.yourPick.price.toLocaleString()}
-          </p>
-        </div>
+        {result.yourPick && (
+          <>
+            <p className="text-xs font-semibold text-mcm-secondary mb-1">
+              YOUR PICK
+            </p>
+            <p className="text-sm font-semibold text-mcm-black mb-3">
+              내가 찾은 상품
+            </p>
+            <div
+              onClick={() => navigate(`/products/${result.yourPick.id}`)}
+              className="relative w-1/2 mb-5 cursor-pointer"
+            >
+              <HeartToggle
+                isSaved={isSaved(result.yourPick.id)}
+                onClick={() => toggleSave(result.yourPick.id)}
+              />
+              <img
+                src={result.yourPick.image}
+                alt={result.yourPick.name}
+                className="w-full aspect-square object-cover mb-2"
+              />
+              <p className="text-xs leading-snug mb-1 text-mcm-black">
+                {result.yourPick.name}
+              </p>
+              <p className="text-xs font-semibold text-mcm-black">
+                ₩ {result.yourPick.price.toLocaleString()}
+              </p>
+            </div>
+
+            <hr className="border-mcm-border mb-5" />
+          </>
+        )}
 
         <hr className="border-mcm-border mb-5" />
 
@@ -136,35 +149,32 @@ export default function MissionResultPage() {
           이 제품과 함께 매치해보세요
         </p>
         <div className="grid grid-cols-2 gap-3">
-          {result.completeTheLook.map((item) => (
+          {result.completeTheLook.map((match) => (
             <div
-              key={item.id}
-              onClick={() => navigate(`/products/${item.id}`)}
+              key={match.product.id}
+              onClick={() => navigate(`/products/${match.product.id}`)}
               className="border border-mcm-border p-3 cursor-pointer"
             >
               <p className="text-[10px] text-mcm-secondary mb-1">AI PICK</p>
-              <p className="text-xs font-semibold text-mcm-black mb-1 leading-snug">
-                {item.aiPickReason}
-              </p>
               <p className="text-[10px] text-mcm-secondary mb-2 leading-snug">
-                {item.aiPickDescription}
+                {match.reason}
               </p>
               <div className="relative">
                 <HeartToggle
-                  isSaved={isSaved(item.id)}
-                  onClick={() => toggleSave(item.id)}
+                  isSaved={isSaved(match.product.id)}
+                  onClick={() => toggleSave(match.product.id)}
                 />
                 <img
-                  src={item.image}
-                  alt={item.name}
+                  src={match.product.image}
+                  alt={match.product.name}
                   className="w-full aspect-square object-cover mb-2"
                 />
               </div>
               <p className="text-xs leading-snug mb-1 text-mcm-black">
-                {item.name}
+                {match.product.name}
               </p>
               <p className="text-xs font-semibold text-mcm-black">
-                ₩ {item.price.toLocaleString()}
+                ₩ {match.product.price.toLocaleString()}
               </p>
             </div>
           ))}

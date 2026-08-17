@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { missions, dummyVisitedStatus } from "../../data/missions";
+import { missions } from "../../data/missions";
 
 export default function MissionPassportSavedPage() {
   const navigate = useNavigate();
@@ -16,12 +16,47 @@ export default function MissionPassportSavedPage() {
   const currentMission = missions[currentIndex];
   const nextMission = missions[currentIndex + 1]; // 마지막(CURIOSITY)이면 undefined
 
-  // TODO: 백엔드 API 나오면 여기서 visits API 호출로 교체
-  // 지금은 mock 상태를 직접 갱신 (임시 방편, Map 붙일 때 Context로 정리 예정)
+  const [isSaving, setIsSaving] = useState(true);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const hasSaved = useRef(false); // 같은 요청 중복 전송 방지용
+
   useEffect(() => {
-    if (house) {
-      dummyVisitedStatus[house] = true;
+    if (!house || hasSaved.current) return;
+    hasSaved.current = true;
+
+    const resultId = localStorage.getItem("resultId");
+
+    if (!resultId) {
+      setSaveError("진단 결과 정보가 없어요.");
+      setIsSaving(false);
+      return;
     }
+
+    async function saveVisit() {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/results/${resultId}/visits`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ scanValue: house }),
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error(`서버 응답 에러: ${response.status}`);
+        }
+
+        await response.json();
+      } catch (err) {
+        console.error("방문 인증 실패:", err);
+        setSaveError("방문 저장에 실패했어요.");
+      } finally {
+        setIsSaving(false);
+      }
+    }
+
+    saveVisit();
   }, [house]);
 
   if (!currentMission) {
@@ -51,6 +86,14 @@ export default function MissionPassportSavedPage() {
         <p className="text-xs tracking-widest font-semibold text-mcm-secondary mb-2">
           PASSPORT UPDATED
         </p>
+
+        {isSaving && (
+          <p className="text-xs text-mcm-secondary mb-2">저장 중이에요...</p>
+        )}
+
+        {saveError && (
+          <p className="text-xs text-mcm-secondary mb-2">{saveError}</p>
+        )}
 
         {nextMission ? (
           <p className="text-sm font-medium text-mcm-black">

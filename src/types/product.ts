@@ -1,8 +1,4 @@
-export type HouseType =
-  | "LEGACY"
-  | "INSTINCT"
-  | "FREEDOM"
-  | "CURIOSITY";
+export type HouseType = "LEGACY" | "INSTINCT" | "FREEDOM" | "CURIOSITY";
 
 export interface Product {
   id: string;
@@ -23,4 +19,22 @@ export interface ProductDetail {
     product: Product;
     reason: string;
   }[];
+}
+
+// 미션 카메라 - 셀카 무드 분석 결과 (POST /api/results/{id}/style-discovery 응답)
+export interface MatchItem {
+  product: Product;
+  reason: string;
+}
+
+export interface StyleDiscoveryView {
+  discoveryId: number;
+  house: HouseType;
+  styleTitle: string;
+  styleDescription: string;
+  styleKeywords: string[];
+  impression: string;
+  yourPick: Product;
+  completeTheLook: MatchItem[];
+  fallback: boolean;
 }
