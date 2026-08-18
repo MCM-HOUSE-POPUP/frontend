@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 
 interface SavedContextType {
@@ -12,13 +12,66 @@ const SavedContext = createContext<SavedContextType | undefined>(undefined);
 export function SavedProvider({ children }: { children: ReactNode }) {
   const [savedIds, setSavedIds] = useState<string[]>([]);
 
-  const toggleSave = (id: string) => {
+  // 초기 로딩: 서버에서 저장된 상품 목록 받아오기
+  useEffect(() => {
+    const resultId = localStorage.getItem("resultId");
+    if (!resultId) return;
+
+    async function fetchSaved() {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/results/${resultId}/saved`,
+        );
+        if (!response.ok) throw new Error(`서버 응답 에러: ${response.status}`);
+        const data: { id: string }[] = await response.json();
+        setSavedIds(data.map((product) => product.id));
+      } catch (err) {
+        console.error("저장 목록 조회 실패:", err);
+      }
+    }
+
+    fetchSaved();
+  }, []);
+
+  const toggleSave = async (id: string) => {
+    const resultId = localStorage.getItem("resultId");
+    if (!resultId) {
+      console.error("진단 결과 정보가 없어요.");
+      return;
+    }
+
+    const wasSaved = savedIds.includes(id);
+
+    // 화면 먼저 즉시 반영 (낙관적 업데이트)
     setSavedIds((prev) =>
-      prev.includes(id)
-        ? prev.filter((savedId) => savedId !== id)
-        : [...prev, id],
+      wasSaved ? prev.filter((savedId) => savedId !== id) : [...prev, id],
     );
-    // TODO: 실제로는 여기서 API 호출 (찜 등록/해제) 필요
+
+    try {
+      if (wasSaved) {
+        const response = await fetch(
+          `http://localhost:8080/api/results/${resultId}/saved/${id}`,
+          { method: "DELETE" },
+        );
+        if (!response.ok) throw new Error(`서버 응답 에러: ${response.status}`);
+      } else {
+        const response = await fetch(
+          `http://localhost:8080/api/results/${resultId}/saved`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ productId: id }),
+          },
+        );
+        if (!response.ok) throw new Error(`서버 응답 에러: ${response.status}`);
+      }
+    } catch (err) {
+      console.error("저장/취소 실패:", err);
+      // 실패하면 원래 상태로 되돌리기
+      setSavedIds((prev) =>
+        wasSaved ? [...prev, id] : prev.filter((savedId) => savedId !== id),
+      );
+    }
   };
 
   const isSaved = (id: string) => savedIds.includes(id);

@@ -1,29 +1,46 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  housePool,
-  defaultPool,
-  houseCategories,
-  getRandomProducts,
-} from "../data/products";
-import type { HouseType } from "../types/product";
+import { houseCategories } from "../data/products";
 import { useSaved } from "../context/SavedContext";
-import HeartToggle from "../components/HeartToggle";
-
-// TODO: 실제로는 Context/localStorage에서 가져오기
-const dummyResultId: string | null = null;
-const dummyHouseType: HouseType | null = null;
+import ProductCard from "../components/ProductCard";
+import type { Product } from "../types/product";
 
 export default function HomePage() {
   const navigate = useNavigate();
   const { isSaved, toggleSave } = useSaved();
 
-  const [displayProducts] = useState(() => {
-    const pool =
-      dummyResultId && dummyHouseType ? housePool[dummyHouseType] : defaultPool;
+  const [displayProducts, setDisplayProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-    return getRandomProducts(pool, 2);
-  });
+  useEffect(() => {
+    const resultId = localStorage.getItem("resultId");
+
+    async function fetchProducts() {
+      try {
+        if (resultId) {
+          const response = await fetch(
+            `http://localhost:8080/api/results/${resultId}/recommendations`,
+          );
+          if (!response.ok)
+            throw new Error(`서버 응답 에러: ${response.status}`);
+          const data = await response.json();
+          setDisplayProducts(data.products.slice(0, 2));
+        } else {
+          const response = await fetch("http://localhost:8080/api/products");
+          if (!response.ok)
+            throw new Error(`서버 응답 에러: ${response.status}`);
+          const data: Product[] = await response.json();
+          setDisplayProducts(data.slice(0, 2));
+        }
+      } catch (err) {
+        console.error("상품 목록 조회 실패:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchProducts();
+  }, []);
 
   return (
     <main className="min-h-screen bg-mcm-white px-5 pt-6 pb-32">
@@ -83,31 +100,20 @@ export default function HomePage() {
         DISVOXER IN THIS HOUSE
       </p>
 
-      <div className="grid grid-cols-2 gap-3">
-        {displayProducts.map((product) => (
-          <div
-            key={product.id}
-            className="relative cursor-pointer"
-            onClick={() => navigate(`/products/${product.id}`)}
-          >
-            <HeartToggle
+      {isLoading ? (
+        <p className="text-xs text-mcm-desc">불러오는 중이에요...</p>
+      ) : (
+        <div className="grid grid-cols-2 gap-3">
+          {displayProducts.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
               isSaved={isSaved(product.id)}
-              onClick={() => toggleSave(product.id)}
+              onSave={() => toggleSave(product.id)}
             />
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full aspect-square object-cover mb-2"
-            />
-            <p className="text-xs leading-snug mb-1 text-mcm-black">
-              {product.name}
-            </p>
-            <p className="text-xs font-semibold text-mcm-black">
-              ₩ {product.price.toLocaleString()}
-            </p>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </main>
   );
 }

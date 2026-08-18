@@ -61,9 +61,9 @@ export default function MissionCameraPage() {
     }
 
     const requestBody = {
-      photo: photoDataUrl, // base64 인코딩된 이미지 (data:image/jpeg;base64,... 형태)
+      photo: photoDataUrl,
       house: house?.toUpperCase(),
-      // selectedProductId: 아직 상품 선택 UI가 없어서 일단 생략
+      selectedProductId: "01_REC1", // 실제 존재하는 LEGACY 상품 ID로 수정
     };
 
     setIsUploading(true);
