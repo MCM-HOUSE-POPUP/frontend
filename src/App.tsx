@@ -9,6 +9,8 @@ import SavedPage from "./pages/SavedPage";
 import LandingPage from "./pages/LandingPage";
 import ResultPage from "./pages/ResultPage";
 import TestPage from "./pages/test/TestPage";
+import TestAiPage from "./pages/test/TestAiPage";
+import TestResultPage from "./pages/test/TestResultPage";
 import { SavedProvider } from "./context/SavedContext";
 import MissionListPage from "./pages/mission/MissionListPage";
 import MissionDetailPage from "./pages/mission/MissionDetailPage";
@@ -22,6 +24,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/test" element={<TestPage />} />
+        <Route path="/test/ai/:resultId" element={<TestAiPage />} />
+        <Route path="/test/result/:resultId" element={<TestResultPage />} />
         <Route path="/result" element={<ResultPage />} />
         <Route path="/mission" element={<MissionListPage />} />
         <Route path="/mission/:house" element={<MissionDetailPage />} />
