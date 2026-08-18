@@ -2,6 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { missions } from "../../data/missions";
 
+// 백엔드에서 확정한 House별 대표 상품 ID (셀카 분석용 selectedProductId)
+const HOUSE_PRODUCT_MAP: Record<string, string> = {
+  LEGACY: "01_REC3",
+  INSTINCT: "02_REC2",
+  FREEDOM: "03_REC1",
+  CURIOSITY: "04_REC1",
+};
+
 export default function MissionCameraPage() {
   const navigate = useNavigate();
   const { house } = useParams<{ house: string }>();
@@ -52,7 +60,6 @@ export default function MissionCameraPage() {
     const photoDataUrl = canvas.toDataURL("image/jpeg", 0.9);
 
     // House 테스트 끝나고 localStorage에 저장해둔 resultId 사용
-    // TODO: 실제 키 이름이 "resultId"가 맞는지 꼭 확인
     const resultId = localStorage.getItem("resultId");
 
     if (!resultId) {
@@ -60,10 +67,14 @@ export default function MissionCameraPage() {
       return;
     }
 
+    const houseKey = house?.toUpperCase() ?? "";
+    // house에 맞는 대표 상품 ID로 매핑, 못 찾으면 LEGACY 기본값으로 폴백
+    const selectedProductId = HOUSE_PRODUCT_MAP[houseKey] ?? "01_REC3";
+
     const requestBody = {
       photo: photoDataUrl,
-      house: house?.toUpperCase(),
-      selectedProductId: "01_REC1", // 실제 존재하는 LEGACY 상품 ID로 수정
+      house: houseKey,
+      selectedProductId,
     };
 
     setIsUploading(true);
