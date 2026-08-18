@@ -1,17 +1,45 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { allProducts, savedFilterTabs } from "../data/products";
+import { useEffect, useState } from "react";
+import { savedFilterTabs } from "../data/products";
 import { useSaved } from "../context/SavedContext";
-import HeartToggle from "../components/HeartToggle";
+import ProductCard from "../components/ProductCard";
+import type { Product } from "../types/product";
 
 export default function SavedPage() {
-  const navigate = useNavigate();
   const { savedIds, toggleSave, isSaved } = useSaved();
   const [activeFilter, setActiveFilter] = useState<string>("ALL");
+  const [savedProducts, setSavedProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const savedProducts = allProducts.filter((product) =>
-    savedIds.includes(product.id),
-  );
+  useEffect(() => {
+    const resultId = localStorage.getItem("resultId");
+
+    if (!resultId) {
+      setError("진단 결과 정보가 없어요.");
+      setIsLoading(false);
+      return;
+    }
+
+    async function fetchSavedProducts() {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/results/${resultId}/saved`,
+        );
+        if (!response.ok) {
+          throw new Error(`서버 응답 에러: ${response.status}`);
+        }
+        const data: Product[] = await response.json();
+        setSavedProducts(data);
+      } catch (err) {
+        console.error("저장한 상품 조회 실패:", err);
+        setError("저장한 상품을 불러오지 못했어요.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchSavedProducts();
+  }, [savedIds]); // savedIds 바뀔 때마다(찜 토글할 때마다) 목록 다시 받아옴
 
   const activeTab = savedFilterTabs.find((tab) => tab.code === activeFilter);
   const filteredProducts = activeTab?.house
@@ -47,34 +75,25 @@ export default function SavedPage() {
         })}
       </div>
 
-      {filteredProducts.length === 0 ? (
+      {isLoading ? (
+        <p className="text-sm text-mcm-desc text-center mt-20">
+          불러오는 중이에요...
+        </p>
+      ) : error ? (
+        <p className="text-sm text-mcm-desc text-center mt-20">{error}</p>
+      ) : filteredProducts.length === 0 ? (
         <p className="text-sm text-mcm-desc text-center mt-20">
           아직 저장한 상품이 없어요
         </p>
       ) : (
         <div className="grid grid-cols-2 gap-3">
           {filteredProducts.map((product) => (
-            <div
+            <ProductCard
               key={product.id}
-              className="relative cursor-pointer"
-              onClick={() => navigate(`/products/${product.id}`)}
-            >
-              <HeartToggle
-                isSaved={isSaved(product.id)}
-                onClick={() => toggleSave(product.id)}
-              />
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full aspect-square object-cover mb-2"
-              />
-              <p className="text-xs leading-snug mb-1 text-mcm-black">
-                {product.name}
-              </p>
-              <p className="text-xs font-semibold text-mcm-black">
-                ₩ {product.price.toLocaleString()}
-              </p>
-            </div>
+              product={product}
+              isSaved={isSaved(product.id)}
+              onSave={() => toggleSave(product.id)}
+            />
           ))}
         </div>
       )}

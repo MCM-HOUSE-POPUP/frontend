@@ -1,11 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  zoneInfoList,
-  dummyRecommendedRoute,
-  dummyVisitedStatus,
-  missions,
-} from "../data/missions";
+import { zoneInfoList, missions } from "../data/missions";
+
+interface ZoneStatus {
+  house: string;
+  zoneName: string;
+  zoneMission: string;
+  color: string;
+  order: number;
+  visited: boolean;
+}
+
+interface PassportView {
+  resultId: number;
+  visitedCount: number;
+  totalZones: number;
+  completed: boolean;
+  nextRecommended: string;
+  currentZone: string;
+  zones: ZoneStatus[];
+}
 
 function Chevron({ className }: { className?: string }) {
   return (
@@ -22,10 +36,54 @@ export default function MapPage() {
 
   const [floor, setFloor] = useState<1 | 2>(1);
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
+  const [passport, setPassport] = useState<PassportView | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const completedCount = missions.filter(
-    (mission) => dummyVisitedStatus[mission.house],
-  ).length;
+  useEffect(() => {
+    const resultId = localStorage.getItem("resultId");
+
+    if (!resultId) {
+      setError("진단 결과 정보가 없어요.");
+      setIsLoading(false);
+      return;
+    }
+
+    async function fetchPassport() {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/results/${resultId}/passport`,
+        );
+
+        if (!response.ok) {
+          throw new Error(`서버 응답 에러: ${response.status}`);
+        }
+
+        const data: PassportView = await response.json();
+        setPassport(data);
+      } catch (err) {
+        console.error("탐험 현황 조회 실패:", err);
+        setError("탐험 현황을 불러오지 못했어요.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchPassport();
+  }, []);
+
+  // house별 visited 여부를 빠르게 찾기 위한 맵
+  const visitedMap: Record<string, boolean> = {};
+  passport?.zones.forEach((zone) => {
+    visitedMap[zone.house] = zone.visited;
+  });
+
+  // order 기준으로 정렬된 추천 경로 (order는 1부터 시작)
+  const recommendedRoute = passport
+    ? [...passport.zones].sort((a, b) => a.order - b.order).map((z) => z.house)
+    : [];
+
+  const completedCount = passport?.visitedCount ?? 0;
 
   const handleZoneClick = (
     house: string,
@@ -35,6 +93,22 @@ export default function MapPage() {
     if (!isActiveFloor || visited) return;
     setSelectedZone((prev) => (prev === house ? null : house));
   };
+
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-mcm-white flex items-center justify-center max-w-[430px] mx-auto">
+        <p className="text-sm text-mcm-desc">불러오는 중이에요...</p>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="min-h-screen bg-mcm-white flex items-center justify-center max-w-[430px] mx-auto px-5 text-center">
+        <p className="text-sm text-mcm-desc">{error}</p>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-mcm-white px-5 pt-6 pb-10 max-w-[430px] mx-auto">
@@ -72,7 +146,7 @@ export default function MapPage() {
       {/* Zone 그리드 (4칸 고정) */}
       <div className="grid grid-cols-2 border-t border-l border-[#E5E5E5] mb-6">
         {zoneInfoList.map((zone) => {
-          const visited = dummyVisitedStatus[zone.house];
+          const visited = visitedMap[zone.house] ?? false;
           const isActiveFloor = zone.floor === floor;
           const isSelected = selectedZone === zone.house;
           const missionCode = missions.find(
@@ -135,12 +209,11 @@ export default function MapPage() {
         <div className="flex flex-col gap-3">
           {[0, 1].map((rowIndex) => (
             <div key={rowIndex} className="flex items-center gap-8">
-              {dummyRecommendedRoute
+              {recommendedRoute
                 .slice(rowIndex * 2, rowIndex * 2 + 2)
                 .map((house) => {
-                  const globalIndex = dummyRecommendedRoute.indexOf(house);
-                  const isLast =
-                    globalIndex === dummyRecommendedRoute.length - 1;
+                  const globalIndex = recommendedRoute.indexOf(house);
+                  const isLast = globalIndex === recommendedRoute.length - 1;
                   return (
                     <div key={house} className="flex items-center gap-1.5">
                       <span className="w-5 h-5 rounded-full border border-mcm-border text-mcm-black flex items-center justify-center text-[10px] font-semibold shrink-0">

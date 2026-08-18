@@ -1,12 +1,87 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { missions, dummyVisitedStatus } from "../../data/missions";
+import { missions } from "../../data/missions";
+
+interface ZoneStatus {
+  house: string;
+  zoneName: string;
+  zoneMission: string;
+  color: string;
+  order: number;
+  visited: boolean;
+}
+
+interface PassportView {
+  resultId: number;
+  visitedCount: number;
+  totalZones: number;
+  completed: boolean;
+  nextRecommended: string;
+  currentZone: string;
+  zones: ZoneStatus[];
+}
 
 export default function MissionListPage() {
   const navigate = useNavigate();
 
-  const completedCount = missions.filter(
-    (mission) => dummyVisitedStatus[mission.house],
-  ).length;
+  const [passport, setPassport] = useState<PassportView | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const resultId = localStorage.getItem("resultId");
+
+    if (!resultId) {
+      setError("진단 결과 정보가 없어요.");
+      setIsLoading(false);
+      return;
+    }
+
+    async function fetchPassport() {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/results/${resultId}/passport`,
+        );
+
+        if (!response.ok) {
+          throw new Error(`서버 응답 에러: ${response.status}`);
+        }
+
+        const data: PassportView = await response.json();
+        setPassport(data);
+      } catch (err) {
+        console.error("탐험 현황 조회 실패:", err);
+        setError("탐험 현황을 불러오지 못했어요.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchPassport();
+  }, []);
+
+  const visitedMap: Record<string, boolean> = {};
+  passport?.zones.forEach((zone) => {
+    visitedMap[zone.house] = zone.visited;
+  });
+
+  const completedCount = passport?.visitedCount ?? 0;
+
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-mcm-white flex items-center justify-center max-w-[430px] mx-auto">
+        <p className="text-sm text-mcm-desc">불러오는 중이에요...</p>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="min-h-screen bg-mcm-white flex items-center justify-center max-w-[430px] mx-auto px-5 text-center">
+        <p className="text-sm text-mcm-desc">{error}</p>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-mcm-white px-5 pt-6 pb-10 max-w-[430px] mx-auto">
@@ -23,7 +98,7 @@ export default function MissionListPage() {
 
       <div>
         {missions.map((mission) => {
-          const visited = dummyVisitedStatus[mission.house];
+          const visited = visitedMap[mission.house] ?? false;
           return (
             <button
               key={mission.house}
