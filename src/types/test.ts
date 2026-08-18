@@ -15,6 +15,10 @@ export interface TestQuestion {
   options: QuestionOption[];
 }
 
+export interface SubmitRequest {
+  answers: number[];
+}
+
 export interface HouseView {
   key: HouseType;
   title: string;
