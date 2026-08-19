@@ -28,7 +28,7 @@ export default function ProductInquiryPage() {
       <main className="flex min-h-screen flex-col bg-mcm-white">
         <div className="flex flex-1 flex-col items-center justify-center pb-20 text-center">
           <img
-            src="/icons/check.svg"
+            src="/icons/check-circle.svg"
             alt=""
             className="mb-6 h-15 w-15"
           />
