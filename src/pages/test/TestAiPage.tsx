@@ -29,14 +29,14 @@ export default function TestAiPage() {
   });
 
   const styleChoiceMutation = useMutation({
-    mutationFn: (chosenHouse: HouseType) =>
+  mutationFn: (chosenHouse: HouseType) =>
       submitStyleChoice(resultId, {
         chosenHouse,
       }),
-    onSuccess: (result) => {
-      navigate(`/test/result/${result.resultId}`);
-    },
-  });
+  onSuccess: (result) => {
+    navigate(`/test/result/${result.resultId}`);
+  },
+});
 
   const handleNext = () => {
     if (!selectedHouse || styleChoiceMutation.isPending) return;
@@ -50,6 +50,65 @@ export default function TestAiPage() {
         <p className="text-sm text-mcm-desc">
           테스트 결과 정보를 찾을 수 없습니다.
         </p>
+      </main>
+    );
+  }
+
+  if (styleChoiceMutation.isPending) {
+    return (
+      <main
+        className="flex min-h-screen flex-col bg-mcm-white px-[30px] pb-5 pt-6"
+        aria-live="polite"
+      >
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="-ml-4 flex h-10 w-10 items-center justify-center"
+          aria-label="뒤로가기"
+        >
+          <img
+            src="/icons/back-arrow.svg"
+            alt=""
+            className="h-5 w-5"
+          />
+        </button>
+
+        <div className="flex flex-1 flex-col items-center pt-10 text-center">
+          <h1 className="text-2xl font-semibold leading-[1.7] tracking-[-0.02em] text-mcm-accent">
+            당신의 취향을
+            <br />
+            분석하고 있어요
+          </h1>
+
+          <p className="mt-3 text-sm font-semibold leading-[1.7] text-mcm-secondary">
+            HOUSE Test 답변을 바탕으로
+            <br />
+            당신에게 맞는 HOUSE 탐험 순서와 미션을 추천해드릴게요
+          </p>
+
+          <div
+            className="relative mt-12 flex h-[140px] w-[140px] items-center justify-center rounded-full border-[8.5px] border-mcm-inactive border-l-mcm-desc -rotate-45"
+            role="status"
+            aria-label="취향 분석 중"
+          >
+            <span className="rotate-45 text-[22px] font-medium text-mcm-secondary">
+              분석 중
+            </span>
+          </div>
+
+          <div className="mt-15 w-full rounded-[8px] border border-mcm-border px-5 py-5 text-left">
+            <p className="text-ms font-semibold text-mcm-desc">
+              AI가 분석하는 내용
+            </p>
+
+            <div className="mt-2 space-y-2 text-[13px] leading-[1.7] text-mcm-secondary">
+              <p>✓ HOUSE Test에서 나타난 취향</p>
+              <p>✓ 답변에서 나타난 선택 기준</p>
+              <p>✓ MCM HOUSE 가치와의 연결</p>
+              <p>✓ 나에게 맞는 탐험 순서</p>
+            </div>
+          </div>
+        </div>
       </main>
     );
   }
@@ -160,12 +219,12 @@ export default function TestAiPage() {
         disabled={!selectedHouse || styleChoiceMutation.isPending}
         onClick={handleNext}
         className={`mt-auto h-13 w-full rounded-[10px] text-sm font-semibold ${
-          selectedHouse && !styleChoiceMutation.isPending
+          selectedHouse
             ? "bg-mcm-black text-mcm-white"
             : "bg-mcm-border text-mcm-white"
         }`}
       >
-        {styleChoiceMutation.isPending ? "ANALYZING..." : "NEXT"}
+        NEXT
       </button>
     </main>
   );
