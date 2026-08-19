@@ -21,6 +21,22 @@ export interface ProductDetail {
   }[];
 }
 
+export interface InquiryRequest {
+  productId: string;
+}
+
+export interface InquiryResult {
+  inquiryId: number;
+  product: Product;
+  requestedAt: string;
+}
+
+export interface InquiryResponse {
+  status: string;
+  message: string;
+  inquiry: InquiryResult;
+}
+
 // 미션 카메라 - 셀카 무드 분석 결과 (POST /api/results/{id}/style-discovery 응답)
 export interface MatchItem {
   product: Product;

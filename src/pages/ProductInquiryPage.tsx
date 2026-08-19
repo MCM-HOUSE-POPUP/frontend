@@ -1,23 +1,75 @@
 import { useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
-import { mockProductDetails } from "../mocks/productDetail";
+import {
+  getProductDetail,
+  submitSellerInquiry,
+} from "../api/product";
 
 export default function ProductInquiryPage() {
   const navigate = useNavigate();
   const { productId } = useParams();
   const [isComplete, setIsComplete] = useState(false);
 
-  const data = productId ? mockProductDetails[productId] : undefined;
+  const resultId = Number(localStorage.getItem("resultId"));
+  const hasResultId = Number.isInteger(resultId) && resultId > 0;
+  const hasProductId = Boolean(productId);
+
+  const {
+    data,
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ["productDetail", resultId, productId],
+    queryFn: () => getProductDetail(resultId, productId!),
+    enabled: hasResultId && hasProductId,
+  });
+
+  const inquiryMutation = useMutation({
+    mutationFn: () =>
+      submitSellerInquiry(resultId, {
+        productId: productId!,
+      }),
+    onSuccess: () => {
+      setIsComplete(true);
+    },
+  });
 
   const goToProduct = () => {
     navigate(`/products/${productId}`);
   };
 
-  if (!data) {
+  const handleInquiry = () => {
+    if (!productId || inquiryMutation.isPending) return;
+
+    inquiryMutation.mutate();
+  };
+
+  if (!hasResultId || !hasProductId) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-mcm-white">
         <p className="text-sm text-mcm-secondary">
           상품 정보를 찾을 수 없습니다.
+        </p>
+      </main>
+    );
+  }
+
+  if (isPending) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-mcm-white">
+        <p className="text-sm text-mcm-secondary">
+          상품 정보를 불러오는 중입니다.
+        </p>
+      </main>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-mcm-white">
+        <p className="text-sm text-mcm-secondary">
+          상품 정보를 불러오지 못했습니다.
         </p>
       </main>
     );
@@ -98,6 +150,12 @@ export default function ProductInquiryPage() {
             ₩ {data.product.price.toLocaleString()}
           </p>
         </div>
+
+        {inquiryMutation.error && (
+          <p className="mt-4 text-center text-xs text-mcm-desc">
+            제품 문의를 접수하지 못했습니다.
+          </p>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-2 px-5 pb-6">
@@ -111,10 +169,11 @@ export default function ProductInquiryPage() {
 
         <button
           type="button"
-          onClick={() => setIsComplete(true)}
-          className="h-12 bg-mcm-black text-sm font-medium text-mcm-white"
+          disabled={inquiryMutation.isPending}
+          onClick={handleInquiry}
+          className="h-12 bg-mcm-black text-sm font-medium text-mcm-white disabled:opacity-50"
         >
-          셀러에게 문의하기
+          {inquiryMutation.isPending ? "접수 중..." : "셀러에게 문의하기"}
         </button>
       </div>
     </main>
