@@ -29,6 +29,16 @@ export interface HouseView {
   recommendedProductIds: string[];
 }
 
+export interface AiAnalysis {
+  analyzed: boolean;
+  fallback: boolean;
+  questions: string[];
+  answers: string[];
+  house: HouseType | null;
+  summary: string | null;
+  reason: string | null;
+}
+
 export interface TestResult {
   resultId: number;
   scores: Record<HouseType, number>;
@@ -37,6 +47,8 @@ export interface TestResult {
   comboTitle: string;
   comboDescription: string;
   primaryHouse: HouseView;
+  recommendedRoute: HouseType[];
+  ai: AiAnalysis;
 }
 
 export interface StyleChoiceOption {
@@ -53,4 +65,5 @@ export interface StyleChoiceOptionsView {
 
 export interface StyleChoiceRequest {
   chosenHouse: HouseType;
+  reason?: string;
 }

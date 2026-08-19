@@ -62,3 +62,7 @@ export function submitStyleChoice(
     },
   );
 }
+
+export function getTestResult(resultId: number) {
+  return request<TestResult>(`/api/results/${resultId}`);
+}

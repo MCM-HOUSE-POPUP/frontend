@@ -1,6 +1,7 @@
-import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate, useParams } from "react-router-dom";
+import { getTestResult } from "../../api/test";
 import ScoreBar from "../../components/ScoreBar";
-import { mockTestResult } from "../../mocks/testResult";
 import type { HouseType } from "../../types/test";
 
 const houses: HouseType[] = [
@@ -40,11 +41,55 @@ const houseContent: Record<
   },
 };
 
-const MAX_SCORE = 6;
+const MAX_SCORE = 12;
 
 export default function TestResultPage() {
   const navigate = useNavigate();
-  const result = mockTestResult;
+  const { resultId: resultIdParam } = useParams();
+
+  const storedResultId = localStorage.getItem("resultId");
+  const resultId = Number(resultIdParam ?? storedResultId);
+  const hasResultId = Number.isInteger(resultId) && resultId > 0;
+
+  const {
+    data: result,
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ["testResult", resultId],
+    queryFn: () => getTestResult(resultId),
+    enabled: hasResultId,
+  });
+
+  if (!hasResultId) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-mcm-white px-6">
+        <p className="text-sm text-mcm-desc">
+          테스트 결과 정보를 찾을 수 없습니다.
+        </p>
+      </main>
+    );
+  }
+
+  if (isPending) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-mcm-white">
+        <p className="text-sm text-mcm-secondary">
+          테스트 결과를 불러오는 중입니다.
+        </p>
+      </main>
+    );
+  }
+
+  if (error || !result) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-mcm-white px-6">
+        <p className="text-sm text-mcm-desc">
+          테스트 결과를 불러오지 못했습니다.
+        </p>
+      </main>
+    );
+  }
 
   const house = result.primaryHouse.key;
   const content = houseContent[house];
