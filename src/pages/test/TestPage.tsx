@@ -72,7 +72,7 @@ export default function TestPage() {
 
       localStorage.setItem("resultId", String(result.resultId));
 
-      navigate(`/test/ai/${result.resultId}`);
+      navigate(`/test/ai/${result.resultId}`, { replace: true });
     } catch {
       // mutation error는 아래에서 표시
     }
