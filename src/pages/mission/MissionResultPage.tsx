@@ -72,7 +72,7 @@ export default function MissionResultPage() {
         </p>
 
         <p className="text-xs font-semibold text-mcm-black mb-1">
-          내가 끌리는 스타일
+          분석한 스타일 무드
         </p>
         <h1 className="text-xl font-semibold text-mcm-black mb-3">
           {result.styleTitle}
