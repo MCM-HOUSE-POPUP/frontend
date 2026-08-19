@@ -7,7 +7,6 @@ import ProductDetailPage from "./pages/ProductDetailPage";
 import ProductInquiryPage from "./pages/ProductInquiryPage";
 import SavedPage from "./pages/SavedPage";
 import LandingPage from "./pages/LandingPage";
-import ResultPage from "./pages/ResultPage";
 import TestPage from "./pages/test/TestPage";
 import TestAiPage from "./pages/test/TestAiPage";
 import TestResultPage from "./pages/test/TestResultPage";
@@ -26,7 +25,6 @@ export default function App() {
         <Route path="/test" element={<TestPage />} />
         <Route path="/test/ai/:resultId" element={<TestAiPage />} />
         <Route path="/test/result/:resultId" element={<TestResultPage />} />
-        <Route path="/result" element={<ResultPage />} />
         <Route path="/mission" element={<MissionListPage />} />
         <Route path="/mission/:house" element={<MissionDetailPage />} />
         <Route path="/mission/:house/camera" element={<MissionCameraPage />} />
