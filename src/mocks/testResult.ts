@@ -33,4 +33,21 @@ export const mockTestResult: TestResult = {
       "01_REC3",
     ],
   },
+
+  recommendedRoute: [
+    "LEGACY",
+    "CURIOSITY",
+    "FREEDOM",
+    "INSTINCT",
+  ],
+
+  ai: {
+    analyzed: false,
+    fallback: false,
+    questions: [],
+    answers: [],
+    house: null,
+    summary: null,
+    reason: null,
+  },
 };
