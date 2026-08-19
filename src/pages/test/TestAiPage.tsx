@@ -1,14 +1,82 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { mockStyleChoice } from "../../mocks/styleChoice";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  getStyleChoice,
+  submitStyleChoice,
+} from "../../api/test";
+import type { HouseType } from "../../types/test";
 
 export default function TestAiPage() {
   const navigate = useNavigate();
-  const [selectedHouse, setSelectedHouse] = useState<string | null>(null);
+  const { resultId: resultIdParam } = useParams();
+
+  const storedResultId = localStorage.getItem("resultId");
+  const resultId = Number(resultIdParam ?? storedResultId);
+  const hasResultId = Number.isInteger(resultId) && resultId > 0;
+
+  const [selectedHouse, setSelectedHouse] =
+    useState<HouseType | null>(null);
+
+  const {
+    data,
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ["styleChoice", resultId],
+    queryFn: () => getStyleChoice(resultId),
+    enabled: hasResultId,
+  });
+
+  const styleChoiceMutation = useMutation({
+    mutationFn: (chosenHouse: HouseType) =>
+      submitStyleChoice(resultId, {
+        chosenHouse,
+      }),
+    onSuccess: (result) => {
+      navigate(`/test/result/${result.resultId}`);
+    },
+  });
+
+  const handleNext = () => {
+    if (!selectedHouse || styleChoiceMutation.isPending) return;
+
+    styleChoiceMutation.mutate(selectedHouse);
+  };
+
+  if (!hasResultId) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-mcm-white px-[30px]">
+        <p className="text-sm text-mcm-desc">
+          테스트 결과 정보를 찾을 수 없습니다.
+        </p>
+      </main>
+    );
+  }
+
+  if (isPending) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-mcm-white">
+        <p className="text-sm text-mcm-secondary">
+          스타일을 불러오는 중입니다.
+        </p>
+      </main>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-mcm-white px-[30px]">
+        <p className="text-sm text-mcm-desc">
+          스타일을 불러오지 못했습니다.
+        </p>
+      </main>
+    );
+  }
 
   const choices = [
-    { label: "A", ...mockStyleChoice.optionA },
-    { label: "B", ...mockStyleChoice.optionB },
+    { label: "A", ...data.optionA },
+    { label: "B", ...data.optionB },
   ];
 
   return (
@@ -46,7 +114,7 @@ export default function TestAiPage() {
         <div
           role="radiogroup"
           aria-label="스타일 선택"
-          className="mt-6 grid grid-cols-2 gap-3"
+          className="mx-auto mt-6 grid w-full max-w-[320px] grid-cols-2 gap-3"
         >
           {choices.map((choice) => {
             const selected = selectedHouse === choice.house;
@@ -58,38 +126,46 @@ export default function TestAiPage() {
                 role="radio"
                 aria-checked={selected}
                 onClick={() => setSelectedHouse(choice.house)}
-                className={`rounded-[10px] border p-1 ${
-                  selected
-                    ? "border-mcm-black"
-                    : "border-mcm-border"
+                className={`rounded-[10px] border border-mcm-border p-1 ${
+                  selected ? "bg-mcm-black" : "bg-mcm-white"
                 }`}
               >
                 <img
                   src={choice.image}
                   alt={`${choice.title} 스타일`}
-                  className="aspect-square w-full bg-mcm-card-bg object-contain"
+                  className="h-[130px] w-full rounded-t-[7px] object-cover"
                 />
 
-                <p className="py-2 text-sm font-semibold text-mcm-black">
+                <p
+                  className={`py-2.5 text-sm font-semibold ${
+                    selected ? "text-mcm-white" : "text-mcm-black"
+                  }`}
+                >
                   {choice.label}
                 </p>
               </button>
             );
           })}
         </div>
+
+        {styleChoiceMutation.error && (
+          <p className="mt-4 text-center text-xs text-mcm-desc">
+            스타일 선택을 처리하지 못했습니다.
+          </p>
+        )}
       </div>
 
       <button
         type="button"
-        disabled={!selectedHouse}
-        onClick={() => navigate("/test/result/1")}
+        disabled={!selectedHouse || styleChoiceMutation.isPending}
+        onClick={handleNext}
         className={`mt-auto h-13 w-full rounded-[10px] text-sm font-semibold ${
-          selectedHouse
+          selectedHouse && !styleChoiceMutation.isPending
             ? "bg-mcm-black text-mcm-white"
             : "bg-mcm-border text-mcm-white"
         }`}
       >
-        NEXT
+        {styleChoiceMutation.isPending ? "ANALYZING..." : "NEXT"}
       </button>
     </main>
   );

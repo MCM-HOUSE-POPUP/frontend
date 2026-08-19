@@ -1,6 +1,8 @@
 import type {
   SubmitRequest,
   TestQuestion,
+  StyleChoiceOptionsView,
+  StyleChoiceRequest,
   TestResult,
 } from "../types/test";
 
@@ -37,4 +39,26 @@ export function submitTest(data: SubmitRequest) {
     },
     body: JSON.stringify(data),
   });
+}
+
+export function getStyleChoice(resultId: number) {
+  return request<StyleChoiceOptionsView>(
+    `/api/results/${resultId}/ai/style-choice`,
+  );
+}
+
+export function submitStyleChoice(
+  resultId: number,
+  data: StyleChoiceRequest,
+) {
+  return request<TestResult>(
+    `/api/results/${resultId}/ai/style-choice`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    },
+  );
 }

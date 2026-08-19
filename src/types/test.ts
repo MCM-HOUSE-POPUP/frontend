@@ -38,3 +38,19 @@ export interface TestResult {
   comboDescription: string;
   primaryHouse: HouseView;
 }
+
+export interface StyleChoiceOption {
+  house: HouseType;
+  title: string;
+  image: string;
+}
+
+export interface StyleChoiceOptionsView {
+  resultId: number;
+  optionA: StyleChoiceOption;
+  optionB: StyleChoiceOption;
+}
+
+export interface StyleChoiceRequest {
+  chosenHouse: HouseType;
+}
