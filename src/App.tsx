@@ -2,7 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/HomePage";
 import MapPage from "./pages/MapPage";
-import PassportPage from "./pages/ProductDetailPage";
+import PassportPage from "./pages/PassportPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import ProductInquiryPage from "./pages/ProductInquiryPage";
 import SavedPage from "./pages/SavedPage";
@@ -38,7 +38,7 @@ export default function App() {
           <Route path="/home" element={<HomePage />} />
           <Route path="/map" element={<MapPage />} />
           <Route path="/saved" element={<SavedPage />} />
-          <Route path="/passport" element={<ProductDetailPage />} />
+          <Route path="/passport" element={<PassportPage />} />
         </Route>
 
         <Route path="/products/:productId" element={<ProductDetailPage />} />
