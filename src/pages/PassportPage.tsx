@@ -1,8 +1,10 @@
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import TabBar from "../components/TabBar";
 import {
-  mockDiscoveries,
-  mockPassport,
-} from "../mocks/passport";
+  getDiscoveries,
+  getPassport,
+} from "../api/passport";
 import type { HouseType } from "../types/test";
 
 const houseNumbers: Record<HouseType, string> = {
@@ -12,8 +14,67 @@ const houseNumbers: Record<HouseType, string> = {
   CURIOSITY: "04",
 };
 
+function formatVisitedAt(value: string) {
+  return new Date(value).toLocaleTimeString("ko-KR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
 export default function PassportPage() {
-  const visitedZones = mockPassport.zones
+  const navigate = useNavigate();
+
+  const resultId = Number(localStorage.getItem("resultId"));
+  const hasResultId = Number.isInteger(resultId) && resultId > 0;
+
+  const {
+    data: passport,
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ["passport", resultId],
+    queryFn: () => getPassport(resultId),
+    enabled: hasResultId,
+  });
+
+  const { data: discoveries = [] } = useQuery({
+    queryKey: ["discoveries", resultId],
+    queryFn: () => getDiscoveries(resultId),
+    enabled: hasResultId,
+  });
+
+  if (!hasResultId) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-mcm-white px-6">
+        <p className="text-sm text-mcm-desc">
+          진단 결과 정보를 찾을 수 없습니다.
+        </p>
+      </main>
+    );
+  }
+
+  if (isPending) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-mcm-white">
+        <p className="text-sm text-mcm-secondary">
+          패스포트를 불러오는 중입니다.
+        </p>
+      </main>
+    );
+  }
+
+  if (error || !passport) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-mcm-white px-6">
+        <p className="text-sm text-mcm-desc">
+          패스포트를 불러오지 못했습니다.
+        </p>
+      </main>
+    );
+  }
+
+  const visitedZones = passport.zones
     .filter((zone) => zone.visited)
     .sort((a, b) => a.order - b.order);
 
@@ -34,7 +95,7 @@ export default function PassportPage() {
           </h2>
 
           <div className="mt-1 grid grid-cols-2 gap-3">
-            {mockPassport.zones.map((zone) => (
+            {passport.zones.map((zone) => (
               <div
                 key={zone.house}
                 className={`flex h-[98px] flex-col justify-between border border-mcm-border p-3 ${
@@ -61,7 +122,7 @@ export default function PassportPage() {
                       className="h-4 w-3"
                     />
                   ) : (
-                    <span className="flex h-4 w-4 items-center justify-center text-[11px] text-mcm-black">
+                    <span className="flex h-4 w-4 items-center justify-center text-[11px]">
                       ?
                     </span>
                   )}
@@ -81,7 +142,7 @@ export default function PassportPage() {
           </h2>
 
           <div className="mx-auto mt-4 grid w-full max-w-[300px] grid-cols-2 gap-2">
-            {mockDiscoveries.map((discovery) => (
+            {discoveries.map((discovery) => (
               <article
                 key={discovery.discoveryId}
                 className="border border-mcm-border bg-mcm-card-bg"
@@ -127,15 +188,18 @@ export default function PassportPage() {
                   {zone.house}
                 </p>
 
-                <p className="text-[12px] font-semibold text-mcm-secondary">
-                  {zone.visitedAt}
-                </p>
+                {zone.visitedAt && (
+                  <p className="text-[12px] font-semibold text-mcm-secondary">
+                    {formatVisitedAt(zone.visitedAt)}
+                  </p>
+                )}
               </div>
             ))}
           </div>
 
           <button
             type="button"
+            onClick={() => navigate("/mission")}
             className="mt-0.5 flex h-13 w-full items-center justify-center border border-mcm-black text-[14px] font-semibold text-mcm-black"
           >
             <span className="flex translate-x-2.5 items-center">
