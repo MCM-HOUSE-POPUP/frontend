@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getProductDetail } from "../api/product";
 import { useSaved } from "../context/SavedContext";
+import HeartToggle from "../components/HeartToggle";
 import ProductCard from "../components/ProductCard";
 
 export default function ProductDetailPage() {
@@ -63,11 +64,18 @@ export default function ProductDetailPage() {
         </button>
       </header>
 
-      <img
-        src={data.product.image}
-        alt={data.product.name}
-        className="aspect-square w-full bg-mcm-card-bg object-contain"
-      />
+      <div className="relative">
+        <img
+          src={data.product.image}
+          alt={data.product.name}
+          className="aspect-square w-full bg-mcm-card-bg object-contain"
+        />
+
+        <HeartToggle
+          isSaved={isSaved(data.product.id)}
+          onClick={() => toggleSave(data.product.id)}
+        />
+      </div>
 
       <div className="px-5 py-5">
         <p className="mb-2 text-xs font-semibold leading-[1.7] tracking-[-0.02em] text-mcm-secondary">
