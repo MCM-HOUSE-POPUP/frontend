@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { missions } from "../../data/missions";
 
+const API_URL = import.meta.env.VITE_API_URL ?? "";
+
 // 백엔드에서 확정한 House별 대표 상품 ID (셀카 분석용 selectedProductId)
 const HOUSE_PRODUCT_MAP: Record<string, string> = {
   LEGACY: "01_REC3",
@@ -81,7 +83,7 @@ export default function MissionCameraPage() {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/results/${resultId}/style-discovery`,
+        `${API_URL}/api/results/${resultId}/style-discovery`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

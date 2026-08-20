@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 
+const API_URL = import.meta.env.VITE_API_URL ?? "";
+
 interface SavedContextType {
   savedIds: string[];
   toggleSave: (id: string) => void;
@@ -20,7 +22,7 @@ export function SavedProvider({ children }: { children: ReactNode }) {
     async function fetchSaved() {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/results/${resultId}/saved`,
+          `${API_URL}/api/results/${resultId}/saved`,
         );
         if (!response.ok) throw new Error(`서버 응답 에러: ${response.status}`);
         const data: { id: string }[] = await response.json();
@@ -50,13 +52,13 @@ export function SavedProvider({ children }: { children: ReactNode }) {
     try {
       if (wasSaved) {
         const response = await fetch(
-          `http://localhost:8080/api/results/${resultId}/saved/${id}`,
+          `${API_URL}/api/results/${resultId}/saved/${id}`,
           { method: "DELETE" },
         );
         if (!response.ok) throw new Error(`서버 응답 에러: ${response.status}`);
       } else {
         const response = await fetch(
-          `http://localhost:8080/api/results/${resultId}/saved`,
+          `${API_URL}/api/results/${resultId}/saved`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
