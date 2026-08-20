@@ -41,7 +41,7 @@ const houseContent: Record<
   },
 };
 
-const MAX_SCORE = 12;
+const MAX_SCORE = 15;
 
 export default function TestResultPage() {
   const navigate = useNavigate();

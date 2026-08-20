@@ -202,7 +202,7 @@ export default function TestAiPage() {
                 <img
                   src={choice.image}
                   alt={`${choice.title} 스타일`}
-                  className="h-[130px] w-full rounded-t-[7px] object-cover"
+                  className="h-[130px] w-full rounded-t-[7px] bg-mcm-card-bg object-contain"
                 />
 
                 <p
