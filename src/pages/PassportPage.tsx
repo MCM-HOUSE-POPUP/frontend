@@ -10,6 +10,7 @@ import {
   getDiscoveryByHouse,
   getPassport,
 } from "../api/passport";
+import { getTestResult } from "../api/test";
 import type { HouseType } from "../types/test";
 
 const houseNumbers: Record<HouseType, string> = {
@@ -50,6 +51,12 @@ export default function PassportPage() {
   const { data: discoveries = [] } = useQuery({
     queryKey: ["discoveries", resultId],
     queryFn: () => getDiscoveries(resultId),
+    enabled: hasResultId,
+  });
+
+  const { data: testResult } = useQuery({
+    queryKey: ["testResult", resultId],
+    queryFn: () => getTestResult(resultId),
     enabled: hasResultId,
   });
 
@@ -134,44 +141,54 @@ export default function PassportPage() {
           </h2>
 
           <div className="mt-1 grid grid-cols-2 gap-3">
-            {passport.zones.map((zone) => (
-              <div
-                key={zone.house}
-                className={`flex h-[98px] flex-col justify-between border border-mcm-border p-3 ${
-                  zone.visited
-                    ? "bg-mcm-black text-mcm-white"
-                    : "bg-mcm-card-bg text-mcm-black"
-                }`}
-              >
-                <div className="flex items-start justify-between">
-                  <span
-                    className={`text-[11px] ${
-                      zone.visited
-                        ? "text-mcm-white"
-                        : "text-mcm-secondary"
-                    }`}
-                  >
-                    {houseNumbers[zone.house]}
-                  </span>
+            {passport.zones.map((zone) => {
+              const isResultHouse =
+                zone.house === testResult?.primaryHouse.key;
 
-                  {zone.visited ? (
-                    <img
-                      src="/icons/check.svg"
-                      alt=""
-                      className="h-4 w-3"
-                    />
-                  ) : (
-                    <span className="flex h-4 w-4 items-center justify-center text-[11px]">
-                      ?
+              return (
+                <button
+                  key={zone.house}
+                  type="button"
+                  onClick={() =>
+                    navigate(`/test/result/${resultId}`)
+                  }
+                  disabled={!isResultHouse}
+                  className={`flex h-[98px] w-full flex-col justify-between border border-mcm-border p-3 text-left ${
+                    zone.visited
+                      ? "bg-mcm-black text-mcm-white"
+                      : "bg-mcm-card-bg text-mcm-black"
+                  }`}
+                >
+                  <div className="flex w-full items-start justify-between">
+                    <span
+                      className={`text-[11px] ${
+                        zone.visited
+                          ? "text-mcm-white"
+                          : "text-mcm-secondary"
+                      }`}
+                    >
+                      {houseNumbers[zone.house]}
                     </span>
-                  )}
-                </div>
 
-                <p className="text-[13px] font-semibold">
-                  {zone.house}
-                </p>
-              </div>
-            ))}
+                    {zone.visited ? (
+                      <img
+                        src="/icons/check.svg"
+                        alt=""
+                        className="h-4 w-3"
+                      />
+                    ) : (
+                      <span className="flex h-4 w-4 items-center justify-center text-[11px]">
+                        ?
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-[13px] font-semibold">
+                    {zone.house}
+                  </p>
+                </button>
+              );
+            })}
           </div>
         </section>
 
