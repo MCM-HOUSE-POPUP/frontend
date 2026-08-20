@@ -2,6 +2,8 @@ import type {
   DiscoveryArchiveItem,
   PassportView,
 } from "../types/passport";
+import type { StyleDiscoveryView } from "../types/product";
+import type { HouseType } from "../types/test";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "";
 
@@ -28,5 +30,14 @@ export function getPassport(resultId: number) {
 export function getDiscoveries(resultId: number) {
   return request<DiscoveryArchiveItem[]>(
     `/api/results/${resultId}/discoveries`,
+  );
+}
+
+export function getDiscoveryByHouse(
+  resultId: number,
+  house: HouseType,
+) {
+  return request<StyleDiscoveryView>(
+    `/api/results/${resultId}/discoveries/${house}`,
   );
 }
