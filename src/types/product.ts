@@ -7,7 +7,7 @@ export interface Product {
   category: string;
   image: string;
   house: HouseType;
-  productUrl: string;
+  productUrl?: string;
 }
 
 export interface ProductDetail {

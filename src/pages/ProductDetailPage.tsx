@@ -1,7 +1,6 @@
 import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { getProductDetail } from "../api/product";
+import { mockProductDetails } from "../mocks/productDetail";
 import { useSaved } from "../context/SavedContext";
 import ProductCard from "../components/ProductCard";
 
@@ -10,49 +9,17 @@ export default function ProductDetailPage() {
   const { productId } = useParams();
   const { isSaved, toggleSave } = useSaved();
 
-  const resultId = Number(localStorage.getItem("resultId"));
-  const hasResultId = Number.isInteger(resultId) && resultId > 0;
-  const hasProductId = Boolean(productId);
-
-  const {
-    data,
-    isPending,
-    error,
-  } = useQuery({
-    queryKey: ["productDetail", resultId, productId],
-    queryFn: () => getProductDetail(resultId, productId!),
-    enabled: hasResultId && hasProductId,
-  });
+  const data = productId ? mockProductDetails[productId] : undefined;
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [productId]);
 
-  if (!hasResultId || !hasProductId) {
+  if (!data) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-mcm-white">
         <p className="text-sm text-mcm-desc">
           상품 정보를 찾을 수 없습니다.
-        </p>
-      </main>
-    );
-  }
-
-  if (isPending) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-mcm-white">
-        <p className="text-sm text-mcm-secondary">
-          상품 정보를 불러오는 중입니다.
-        </p>
-      </main>
-    );
-  }
-
-  if (error || !data) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-mcm-white">
-        <p className="text-sm text-mcm-desc">
-          상품 정보를 불러오지 못했습니다.
         </p>
       </main>
     );
