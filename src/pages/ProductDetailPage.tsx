@@ -144,12 +144,14 @@ export default function ProductDetailPage() {
           셀러에게 문의하기
         </Link>
 
-        <button
-          type="button"
-          className="h-12 bg-mcm-black text-sm font-medium text-mcm-white"
+        <a
+          href={data.product.productUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex h-12 items-center justify-center bg-mcm-black text-sm font-medium text-mcm-white"
         >
           제품 보러가기
-        </button>
+        </a>
       </div>
     </main>
   );
