@@ -53,7 +53,7 @@ export default function MissionResultPage() {
           <img
             src={photoDataUrl}
             alt="촬영한 사진"
-            className="w-full aspect-[3/4] object-cover mb-4"
+            className="w-full aspect-square object-cover mb-4"
           />
         )}
 
