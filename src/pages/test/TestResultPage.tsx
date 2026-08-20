@@ -165,7 +165,7 @@ export default function TestResultPage() {
         </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 bg-mcm-white px-4 pb-5 pt-3">
+      <div className="fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-[430px] bg-mcm-white px-4 pb-5 pt-3">
         <button
           type="button"
           onClick={() => navigate("/map")}
