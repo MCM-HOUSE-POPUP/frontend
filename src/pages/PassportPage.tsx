@@ -1,8 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import {
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import TabBar from "../components/TabBar";
 import {
   getDiscoveries,
+  getDiscoveryByHouse,
   getPassport,
 } from "../api/passport";
 import type { HouseType } from "../types/test";
@@ -24,6 +29,10 @@ function formatVisitedAt(value: string) {
 
 export default function PassportPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const [loadingHouse, setLoadingHouse] = useState<HouseType | null>(null);
+  const [discoveryError, setDiscoveryError] = useState("");
 
   const resultId = Number(localStorage.getItem("resultId"));
   const hasResultId = Number.isInteger(resultId) && resultId > 0;
@@ -43,6 +52,36 @@ export default function PassportPage() {
     queryFn: () => getDiscoveries(resultId),
     enabled: hasResultId,
   });
+
+  const handleDiscoveryClick = async (house: HouseType) => {
+    if (loadingHouse) return;
+
+    setLoadingHouse(house);
+    setDiscoveryError("");
+
+    try {
+      const result = await queryClient.fetchQuery({
+        queryKey: ["discovery", resultId, house],
+        queryFn: () => getDiscoveryByHouse(resultId, house),
+        staleTime: 1000 * 60 * 5,
+      });
+
+      const discovery = discoveries.find(
+        (item) => item.house === house,
+      );
+
+      navigate(`/mission/${house.toLowerCase()}/result`, {
+        state: {
+          photoDataUrl: discovery?.photoDataUrl,
+          styleResult: result,
+        },
+      });
+    } catch {
+      setDiscoveryError("디스커버리 정보를 불러오지 못했습니다.");
+    } finally {
+      setLoadingHouse(null);
+    }
+  };
 
   if (!hasResultId) {
     return (
@@ -143,15 +182,26 @@ export default function PassportPage() {
 
           <div className="mx-auto mt-4 grid w-full max-w-[300px] grid-cols-2 gap-2">
             {discoveries.map((discovery) => (
-              <article
+              <button
                 key={discovery.discoveryId}
-                className="border border-mcm-border bg-mcm-card-bg"
+                type="button"
+                onClick={() => handleDiscoveryClick(discovery.house)}
+                disabled={loadingHouse !== null}
+                className="border border-mcm-border bg-mcm-card-bg text-left disabled:cursor-default"
               >
-                <img
-                  src={discovery.photoDataUrl}
-                  alt={`${discovery.house} discovery`}
-                  className="aspect-[4/3] w-full object-cover"
-                />
+                <div className="relative">
+                  <img
+                    src={discovery.photoDataUrl}
+                    alt={`${discovery.house} discovery`}
+                    className="aspect-[4/3] w-full object-cover"
+                  />
+
+                  {loadingHouse === discovery.house && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-mcm-white/70">
+                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-mcm-border border-t-mcm-black" />
+                    </div>
+                  )}
+                </div>
 
                 <div className="px-2 py-2">
                   <p className="text-[12px] font-semibold text-mcm-secondary">
@@ -162,9 +212,15 @@ export default function PassportPage() {
                     {discovery.styleTitle}
                   </p>
                 </div>
-              </article>
+              </button>
             ))}
           </div>
+
+          {discoveryError && (
+            <p className="mt-3 text-center text-xs text-mcm-desc">
+              {discoveryError}
+            </p>
+          )}
         </section>
 
         <section className="mt-7 border-t border-mcm-border pt-5">
