@@ -1,6 +1,7 @@
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { mockProductDetails } from "../mocks/productDetail";
+import { getProductDetail } from "../api/product";
 import { useSaved } from "../context/SavedContext";
 import ProductCard from "../components/ProductCard";
 
@@ -9,17 +10,37 @@ export default function ProductDetailPage() {
   const { productId } = useParams();
   const { isSaved, toggleSave } = useSaved();
 
-  const data = productId ? mockProductDetails[productId] : undefined;
+  const resultId = Number(localStorage.getItem("resultId"));
+
+  const {
+    data,
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ["productDetail", resultId, productId],
+    queryFn: () => getProductDetail(resultId, productId!),
+    enabled: resultId > 0 && Boolean(productId),
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [productId]);
 
-  if (!data) {
+  if (isPending) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-mcm-white">
+        <p className="text-sm text-mcm-secondary">
+          상품 정보를 불러오는 중입니다.
+        </p>
+      </main>
+    );
+  }
+
+  if (error || !data) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-mcm-white">
         <p className="text-sm text-mcm-desc">
-          상품 정보를 찾을 수 없습니다.
+          상품 정보를 불러오지 못했습니다.
         </p>
       </main>
     );
@@ -103,7 +124,7 @@ export default function ProductDetailPage() {
         </section>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-2 gap-2 bg-mcm-white px-5 pb-6 pt-3">
+      <div className="fixed inset-x-0 bottom-0 z-20 mx-auto grid w-full max-w-[430px] grid-cols-2 gap-2 bg-mcm-white px-5 pb-6 pt-3">
         <Link
           to={`/products/${data.product.id}/inquiry`}
           className="flex h-12 items-center justify-center bg-mcm-secondary text-sm font-medium text-mcm-white"
