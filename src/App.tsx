@@ -21,6 +21,7 @@ import MissionDetailPage from "./pages/mission/MissionDetailPage";
 import MissionCameraPage from "./pages/mission/MissionCameraPage";
 import MissionResultPage from "./pages/mission/MissionResultPage";
 import MissionPassportSavedPage from "./pages/mission/MissionPassportSavedPage";
+import MissionAnalyzingPage from "./pages/mission/MissionAnalyzingPage";
 
 export default function App() {
   return (
@@ -43,15 +44,18 @@ export default function App() {
             path="/mission/:house/result"
             element={<MissionResultPage />}
           />
+
           <Route
             path="/mission/passport-saved"
             element={<MissionPassportSavedPage />}
           />
 
           <Route
-            path="/products/:productId"
-            element={<ProductDetailPage />}
+            path="/mission/:house/analyzing"
+            element={<MissionAnalyzingPage />}
           />
+
+          <Route path="/products/:productId" element={<ProductDetailPage />} />
           <Route
             path="/products/:productId/inquiry"
             element={<ProductInquiryPage />}
