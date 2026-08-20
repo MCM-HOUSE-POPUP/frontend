@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { zoneInfoList, missions } from "../data/missions";
 
+const API_URL = import.meta.env.VITE_API_URL ?? "";
+
 interface ZoneStatus {
   house: string;
   zoneName: string;
@@ -52,7 +54,7 @@ export default function MapPage() {
     async function fetchPassport() {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/results/${resultId}/passport`,
+          `${API_URL}/api/results/${resultId}/passport`,
         );
 
         if (!response.ok) {

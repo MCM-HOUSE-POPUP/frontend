@@ -4,6 +4,8 @@ import { useSaved } from "../context/SavedContext";
 import ProductCard from "../components/ProductCard";
 import type { Product } from "../types/product";
 
+const API_URL = import.meta.env.VITE_API_URL ?? "";
+
 export default function SavedPage() {
   const { savedIds, toggleSave, isSaved } = useSaved();
   const [activeFilter, setActiveFilter] = useState<string>("ALL");
@@ -23,7 +25,7 @@ export default function SavedPage() {
     async function fetchSavedProducts() {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/results/${resultId}/saved`,
+          `${API_URL}/api/results/${resultId}/saved`,
         );
         if (!response.ok) {
           throw new Error(`서버 응답 에러: ${response.status}`);

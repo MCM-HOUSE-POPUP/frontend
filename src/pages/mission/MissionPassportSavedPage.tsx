@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { missions } from "../../data/missions";
 
+const API_URL = import.meta.env.VITE_API_URL ?? "";
+
 interface ZoneStatus {
   house: string;
   zoneName: string;
@@ -54,7 +56,7 @@ export default function MissionPassportSavedPage() {
     async function saveVisit() {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/results/${resultId}/visits`,
+          `${API_URL}/api/results/${resultId}/visits`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

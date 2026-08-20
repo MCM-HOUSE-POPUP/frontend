@@ -5,6 +5,8 @@ import { useSaved } from "../context/SavedContext";
 import ProductCard from "../components/ProductCard";
 import type { Product } from "../types/product";
 
+const API_URL = import.meta.env.VITE_API_URL ?? "";
+
 export default function HomePage() {
   const navigate = useNavigate();
   const { isSaved, toggleSave } = useSaved();
@@ -19,14 +21,14 @@ export default function HomePage() {
       try {
         if (resultId) {
           const response = await fetch(
-            `http://localhost:8080/api/results/${resultId}/recommendations`,
+            `${API_URL}/api/results/${resultId}/recommendations`,
           );
           if (!response.ok)
             throw new Error(`서버 응답 에러: ${response.status}`);
           const data = await response.json();
           setDisplayProducts(data.products.slice(0, 2));
         } else {
-          const response = await fetch("http://localhost:8080/api/products");
+          const response = await fetch(`${API_URL}/api/products`);
           if (!response.ok)
             throw new Error(`서버 응답 에러: ${response.status}`);
           const data: Product[] = await response.json();
@@ -97,7 +99,7 @@ export default function HomePage() {
       <hr className="border-mcm-border mb-4" />
 
       <p className="text-xs tracking-widest text-mcm-secondary font-semibold mb-3">
-        DISVOXER IN THIS HOUSE
+        DISCOVER IN THIS HOUSE
       </p>
 
       {isLoading ? (
