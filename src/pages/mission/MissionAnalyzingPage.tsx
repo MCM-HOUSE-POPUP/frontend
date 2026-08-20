@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { HOUSE_PRODUCT_MAP } from "../../constants/houseProduct";
+import type { StyleDiscoveryView } from "../../types/product";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "";
 
@@ -15,6 +16,44 @@ const ANALYSIS_STEPS = [
 ];
 
 const STEP_INTERVAL_MS = 600;
+const REQUEST_TIMEOUT_MS = 30000;
+
+async function analyzeStyle(
+  resultId: string,
+  house: string,
+  photoDataUrl: string,
+): Promise<StyleDiscoveryView> {
+  const controller = new AbortController();
+  const timeout = setTimeout(
+    () => controller.abort(),
+    REQUEST_TIMEOUT_MS,
+  );
+
+  try {
+    const response = await fetch(
+      `${API_URL}/api/results/${resultId}/style-discovery`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          photo: photoDataUrl,
+          house,
+        }),
+        signal: controller.signal,
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`서버 응답 에러: ${response.status}`);
+    }
+
+    return response.json();
+  } finally {
+    clearTimeout(timeout);
+  }
+}
 
 export default function MissionAnalyzingPage() {
   const navigate = useNavigate();
@@ -25,22 +64,35 @@ export default function MissionAnalyzingPage() {
   const [checkedSteps, setCheckedSteps] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
-  const hasCalledApi = useRef(false); // StrictMode 이중 호출 방지
-  const apiResultRef = useRef<unknown>(null);
-  const apiDoneRef = useRef(false);
+  const hasCalledApi = useRef(false);
 
-  // 체크리스트 애니메이션 (실제 진행률 아님, 최소 로딩 시간 보장용)
+  const analysisMutation = useMutation({
+    mutationFn: ({
+      resultId,
+      house,
+      photoDataUrl,
+    }: {
+      resultId: string;
+      house: string;
+      photoDataUrl: string;
+    }) => analyzeStyle(resultId, house, photoDataUrl),
+
+    onError: () => {
+      setError("사진 분석에 실패했어요. 다시 시도해주세요.");
+    },
+  });
+
   useEffect(() => {
-    const timers = ANALYSIS_STEPS.map((_, idx) =>
+    const timers = ANALYSIS_STEPS.map((_, index) =>
       setTimeout(
-        () => setCheckedSteps((prev) => Math.max(prev, idx + 1)),
-        (idx + 1) * STEP_INTERVAL_MS,
+        () => setCheckedSteps((prev) => Math.max(prev, index + 1)),
+        (index + 1) * STEP_INTERVAL_MS,
       ),
     );
+
     return () => timers.forEach(clearTimeout);
   }, []);
 
-  // 실제 API 호출
   useEffect(() => {
     if (hasCalledApi.current) return;
     hasCalledApi.current = true;
@@ -56,53 +108,40 @@ export default function MissionAnalyzingPage() {
       return;
     }
 
-    const houseKey = house?.toUpperCase() ?? "";
-    const selectedProductId = HOUSE_PRODUCT_MAP[houseKey] ?? "01_REC3";
+    if (!house) {
+      setError("House 정보를 찾을 수 없어요.");
+      return;
+    }
 
-    fetch(`${API_URL}/api/results/${resultId}/style-discovery`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        photo: photoDataUrl,
-        house: houseKey,
-        selectedProductId,
-      }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`서버 응답 에러: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        apiResultRef.current = data;
-        apiDoneRef.current = true;
-        tryNavigate();
-      })
-      .catch((err) => {
-        console.error("사진 전송 실패:", err);
-        setError("사진 분석에 실패했어요. 다시 시도해주세요.");
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [photoDataUrl, house]);
+    analysisMutation.mutate({
+      resultId,
+      house: house.toUpperCase(),
+      photoDataUrl,
+    });
+  }, [house, photoDataUrl]);
 
-  // 애니메이션 다 끝났을 때도 이동 시도 (API가 애니메이션보다 먼저 끝난 경우 대비)
   useEffect(() => {
-    if (checkedSteps === ANALYSIS_STEPS.length) {
-      tryNavigate();
+    if (
+      !analysisMutation.data ||
+      checkedSteps !== ANALYSIS_STEPS.length
+    ) {
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checkedSteps]);
 
-  const tryNavigate = () => {
-    // API 응답 O + 체크리스트 애니메이션 O 둘 다 끝나야 이동 (로딩이 너무 짧게 안 보이도록)
-    if (apiDoneRef.current && checkedSteps === ANALYSIS_STEPS.length) {
-      navigate(`/mission/${house?.toLowerCase()}/result`, {
-        state: { photoDataUrl, styleResult: apiResultRef.current },
-        replace: true,
-      });
-    }
-  };
+    navigate(`/mission/${house?.toLowerCase()}/result`, {
+      state: {
+        photoDataUrl,
+        styleResult: analysisMutation.data,
+      },
+      replace: true,
+    });
+  }, [
+    analysisMutation.data,
+    checkedSteps,
+    house,
+    navigate,
+    photoDataUrl,
+  ]);
 
   return (
     <main className="min-h-screen w-full max-w-[430px] mx-auto bg-black flex flex-col">
@@ -151,21 +190,28 @@ export default function MissionAnalyzingPage() {
               <p className="text-white text-sm font-semibold mb-3">
                 AI가 분석하는 내용
               </p>
+
               <ul className="flex flex-col gap-2">
-                {ANALYSIS_STEPS.map((step, idx) => {
-                  const isChecked = idx < checkedSteps;
+                {ANALYSIS_STEPS.map((step, index) => {
+                  const isChecked = index < checkedSteps;
+
                   return (
                     <li
                       key={step}
                       className="flex items-center gap-2 text-sm transition-colors duration-300"
                     >
                       <span
-                        className={isChecked ? "text-white" : "text-white/30"}
+                        className={
+                          isChecked ? "text-white" : "text-white/30"
+                        }
                       >
                         ✓
                       </span>
+
                       <span
-                        className={isChecked ? "text-white" : "text-white/40"}
+                        className={
+                          isChecked ? "text-white" : "text-white/40"
+                        }
                       >
                         {step}
                       </span>
